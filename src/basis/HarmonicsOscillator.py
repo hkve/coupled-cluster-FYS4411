@@ -38,7 +38,10 @@ class HarmonicsOscillator(SpinRestrictedBasis):
 
 
     def calculate_TB(self):
-        pass
+        Hermite = []
+        H0 = lambda x: 1
+        H1 = lambda x: 2*x
+
 
     def calculate_OB(self):
         """
