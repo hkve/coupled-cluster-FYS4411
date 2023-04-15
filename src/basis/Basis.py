@@ -6,15 +6,15 @@ class SpinRestrictedBasis(ABC):
     def __init__(self, L=10, **kwargs):
         self.L_ = L
         self.h_ = np.zeros((L, L), dtype=float)
-        self.u_ = np.zeros((L, L, L, L), dtype=float)
+        self.v_ = np.zeros((L, L, L, L), dtype=float)
 
     @property
     def h(self):
         return self.h_
 
     @property
-    def u(self):
-        return self.u_
+    def v(self):
+        return self.v_
 
     def save_TB(self, filename):
         return self

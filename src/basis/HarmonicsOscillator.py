@@ -20,7 +20,7 @@ class HarmonicsOscillator(SpinRestrictedBasis):
         
         p = 1
         for shell, N in zip(self.shell_numbers_, self.cummulative_Ns_):
-            if(N > self.L_):
+            if(N > self.L_): # Check shell table here, replace ">" with ">="?
                 break
 
             for i in range(shell):
@@ -58,5 +58,5 @@ if __name__ == '__main__':
     ho = HarmonicsOscillator(L = 10)
     ho.calculate_OB()
 
-    # print(ho.spin_degeneracies_)
+    print(ho.n_to_p)
     # print(ho.h)
