@@ -6,7 +6,7 @@ class SpinRestrictedBasis(ABC):
     def __init__(self, L=10, **kwargs):
         self.L_ = L
         self.h_ = np.zeros((L, L), dtype=float)
-        self.v_ = np.zeros((L, L, L, L), dtype=float)
+        self.v_ = np.zeros((L, L, L, L), dtype=float)*np.nan
 
     @property
     def h(self):
