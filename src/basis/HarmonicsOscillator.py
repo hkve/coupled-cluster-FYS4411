@@ -69,7 +69,7 @@ class HarmonicsOscillator(SpinRestrictedBasis):
         opts = {"maxp1": 3}
         I = nquad(self.integrand, lims, args=(n_p, n_q, n_r, n_s), opts=opts)
 
-        return A(*n_p)*A(*n_q)*A(*n_r)*A(*n_s) * I / self.omega**(3/2)
+        return self.A(*n_p)*self.A(*n_q)*self.A(*n_r)*self.A(*n_s) * I / self.omega**(3/2)
 
     def calculate_TB(self):
         L = self.L_

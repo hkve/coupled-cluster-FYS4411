@@ -1,4 +1,5 @@
 import numpy as np
+import pathlib as pl
 from abc import ABC, abstractmethod
 
 class SpinRestrictedBasis(ABC):
@@ -16,8 +17,21 @@ class SpinRestrictedBasis(ABC):
     def v(self):
         return self.v_
 
+    def find_folder(self):
+        print(__file__)
+
+    def load_elements(self, filename):
+        pass
+
     def save_TB(self, filename):
-        return self
+        pass
 
     def load_TB(self, filename):
+        path = pl.Path(__file__).parent / pl.Path("sets")
+        path.mkdir(exist_ok=True)            
+        path /= pl.Path(filename)
+
+        assert path.exists(), f"No file at {str(path)}"
+        self.load_elements(path)
+
         return self
