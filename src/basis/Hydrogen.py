@@ -10,6 +10,10 @@ class Hydrogen(SpinRestrictedBasis):
         assert L in self.shell_numbers_, f"{L = } not in {self.shell_numbers_}"
         super().__init__(L=L, **kwargs)
 
+    def calculate_OB(self):
+        for i in range(self.L_):
+            self.h_[i,i] = -self.Z_**2 / (2*(i+1)**2)
+
     def load_elements(self, filename):
         with open(filename, "r") as file:
             for line in file:
@@ -29,9 +33,3 @@ class Hydrogen(SpinRestrictedBasis):
                 
                 
                 self.v_[i,j,k,l] = float(elm.subs("Z", self.Z_))
-
-    
-if __name__ == "__main__":
-    hy = Hydrogen(L=3).load_TB("hydrogen.txt")
-
-    print(hy.v)
