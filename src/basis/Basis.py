@@ -4,10 +4,16 @@ from abc import ABC, abstractmethod
 
 class SpinRestrictedBasis(ABC):
     @abstractmethod
-    def __init__(self, L=10, **kwargs):
+    def __init__(self, L, N, **kwargs):
+        assert N <= L, f"Cannot have more particles {N =} than basis functions {L = }"
         self.L_ = L
+        self.N_ = N
+
         self.h_ = np.zeros((L, L), dtype=float)
         self.v_ = np.zeros((L, L, L, L), dtype=float)*np.nan
+        
+        self.occ_ = slice(0,N)
+        self.vir_ = slice(N,L)
 
     @property
     def h(self):
@@ -16,6 +22,14 @@ class SpinRestrictedBasis(ABC):
     @property
     def v(self):
         return self.v_
+
+    @property
+    def occ(self):
+        return self.occ_
+    
+    @property
+    def vir(self):
+        return self.vir_
 
     def find_folder(self):
         print(__file__)

@@ -2,32 +2,22 @@ from ..basis.Hydrogen import Hydrogen
 import numpy as np
 
 class RHF:
-    def __init__(self, basis, Lf):
+    def __init__(self, basis):
         self.basis = basis
-        self.Lf_ = Lf
         self.has_run = False
         self.converged = False
 
     def density_matrix(self, C, L, Lf):
-        rho = np.zeros_like(C)
-
-        for alpha in range(L):
-            for beta in range(L):
-                elm = 0
-                for i in range(Lf):
-                    elm += C[alpha, i]*C[beta, i]
-                rho[alpha,beta] = elm
-
-        return rho
+        return np.einsum("ai,bi->ab", C[:,self.basis.occ], C[:,self.basis.occ])
 
     def run(self, tol=1e-8, maxiters=1000):
         basis = self.basis
         
         L = basis.L_
-        Lf = self.Lf_
+        N = basis.N_
 
         C = np.eye(L, L)
-        rho = self.density_matrix(C, L, Lf)
+        rho = self.density_matrix(C, L, N)
         
         eps_hf_old = np.zeros_like(basis.h)
         eps_hf_new = np.zeros_like(basis.h)
@@ -42,7 +32,7 @@ class RHF:
             
             eps_hf_new, C = np.linalg.eigh(HFmat)
 
-            rho = self.density_matrix(C, L, Lf)
+            rho = self.density_matrix(C, L, N)
             diff = np.mean(np.abs(eps_hf_new-eps_hf_old))
             eps_hf_old = eps_hf_new
             iters += 1
@@ -91,10 +81,10 @@ class RHF:
 
 
 if __name__ == '__main__':
-    hy = Hydrogen(L=3, Z=2).load_TB("hydrogen.txt")
+    hy = Hydrogen(L=3, N=1, Z=2).load_TB("hydrogen.txt")
     hy.calculate_OB()
 
-    rhf = RHF(hy, Lf=1)
+    rhf = RHF(hy)
     rhf.run(maxiters=20)
     rhf.evalute_energy()
     # print(hy.h)

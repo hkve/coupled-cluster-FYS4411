@@ -5,14 +5,14 @@ from scipy.integrate import nquad
 from math import exp
 
 class HarmonicsOscillator(SpinRestrictedBasis):
-    def __init__(self, L=10, omega=1, **kwargs):
+    def __init__(self, L=10, N=3, omega=1, **kwargs):
         self.omega_ = omega
         self.shell_numbers_ = np.arange(1, 10)
         self.degeneracies_ = [n for n in self.shell_numbers_]
         self.cummulative_Ns_ = [sum(self.degeneracies_[:i]) for i in self.shell_numbers_]
         
         assert L in self.cummulative_Ns_, f"{L = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
-        super().__init__(L=L, **kwargs)
+        super().__init__(L=L, N=3, **kwargs)
         self.make_mappings()
 
     def make_mappings(self):        

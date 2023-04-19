@@ -4,11 +4,11 @@ import re
 from sympy import sympify
 
 class Hydrogen(SpinRestrictedBasis):
-    def __init__(self, L=3, Z=2, **kwargs):
+    def __init__(self, L=3, N=1, Z=2, **kwargs):
         self.shell_numbers_ = [1,2,3]
         self.Z_ = Z
         assert L in self.shell_numbers_, f"{L = } not in {self.shell_numbers_}"
-        super().__init__(L=L, **kwargs)
+        super().__init__(L=L, N=N, **kwargs)
 
     def calculate_OB(self):
         for i in range(self.L_):
