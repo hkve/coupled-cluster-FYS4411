@@ -1,25 +1,26 @@
-from .Basis import SpinRestrictedBasis
+from .Basis import Basis
 import numpy as np
 from scipy.special import hermite, factorial
 from scipy.integrate import nquad
 from math import exp
 
-class HarmonicsOscillator(SpinRestrictedBasis):
-    def __init__(self, L=10, N=3, omega=1, **kwargs):
+class HarmonicsOscillator(Basis):
+    def __init__(self, L=10, N=3, spinrestricted=True, omega=1, **kwargs):
         self.omega_ = omega
         self.shell_numbers_ = np.arange(1, 10)
-        self.degeneracies_ = [n for n in self.shell_numbers_]
+        self.degeneracies_ = 2*self.shell_numbers_
         self.cummulative_Ns_ = [sum(self.degeneracies_[:i]) for i in self.shell_numbers_]
-        
-        assert L in self.cummulative_Ns_, f"{L = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
-        super().__init__(L=L, N=3, **kwargs)
+
+        super().__init__(L=L, N=N, spinrestricted=spinrestricted, **kwargs)
+        assert self.degeneracy_*self.L_ in self.cummulative_Ns_, f"{self.L_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
+        assert self.degeneracy_*self.N_ in self.cummulative_Ns_, f"{self.N_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
         self.make_mappings()
 
-    def make_mappings(self):        
+    def make_mappings(self):
         """
         Makes a mapping between quantum numbers and matrix indicies, both ways.
         """
-        self.n_to_p_ = {(0,0): 0}
+        n_to_p_restricted = {(0,0): 0}
         
         shell_numbers, cummulative_Ns = [], []
         p = 1
@@ -27,7 +28,7 @@ class HarmonicsOscillator(SpinRestrictedBasis):
             shell_numbers.append(shell)
             cummulative_Ns.append(N)
             
-            if(N >= self.L_):
+            if(N >= self.degeneracy_*self.L_):
                 break
 
             for i in range(shell):
@@ -37,16 +38,28 @@ class HarmonicsOscillator(SpinRestrictedBasis):
                 if(i > shell//2):
                     break
                 if n1 == n2:
-                    self.n_to_p_[n1] = p
+                    n_to_p_restricted[n1] = p
                     p += 1
                 else:
-                    self.n_to_p_[n1] = p
-                    self.n_to_p_[n2] = p+1
+                    n_to_p_restricted[n1] = p
+                    n_to_p_restricted[n2] = p+1
                     p += 2
 
+        n_to_p = n_to_p_restricted
+        if not self.spinrestricted_:
+            n_to_p = {}
+            p = 0
+            for k, v in n_to_p_restricted.items():
+                n_up = (*k, 0)
+                n_down = (*k, 1)
+                n_to_p[n_up] = p
+                n_to_p[n_down] = p+1
+                p += 2
+            
+        self.n_to_p_ = n_to_p
         self.p_to_n_ = {v: k for k, v in self.n_to_p_.items()}
-        self.shell_numbers_ = shell_numbers
-        self.cummulative_Ns_ = cummulative_Ns
+        self.shell_numbers_ = np.array(shell_numbers)
+        self.cummulative_Ns_ = np.array(cummulative_Ns)
 
     def A(self, nx, ny):
         return 2**( -(nx+ny)/2 ) * np.sqrt(self.omega_ / (factorial(nx) * factorial(ny) * np.pi))
@@ -92,12 +105,14 @@ class HarmonicsOscillator(SpinRestrictedBasis):
         """
         k = 0
         for i in range(self.L_):
-            if i >= self.cummulative_Ns_[k]:
+            if i >= self.cummulative_Ns_[k]//self.degeneracy_:
                 k += 1
             self.h_[i,i] = self.omega_*(self.shell_numbers_[k])
 
 if __name__ == '__main__':
-    ho = HarmonicsOscillator(L = 3)
+    ho = HarmonicsOscillator(L = 20, N=12, spinrestricted=False)
     ho.calculate_OB()
-    ho.calculate_TB()
-
+    
+    print(ho.shell_numbers_, ho.cummulative_Ns_)
+    for (k1,v1), (k2, v2) in zip(ho.n_to_p_.items(), ho.p_to_n_.items()):
+        print(k1, v1, k2, v2)

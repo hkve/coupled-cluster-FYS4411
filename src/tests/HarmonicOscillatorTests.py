@@ -6,7 +6,7 @@ import numpy as np
 class TestHarmonicsOscillator(unittest.TestCase):
     def test_OB(self):
         omega = 0.5
-        ho = HarmonicsOscillator(L=3, omega=omega)
+        ho = HarmonicsOscillator(L=6, N=2,omega=omega)
         ho.calculate_OB()
 
         calculated = np.diag(ho.h)
@@ -15,7 +15,7 @@ class TestHarmonicsOscillator(unittest.TestCase):
         self.assertTrue(np.allclose(calculated, expected), f"Differing single particle energies, {expected = }, {calculated = }")
 
     def test_mapping(self):
-        ho = HarmonicsOscillator(L = 10)
+        ho = HarmonicsOscillator(L = 20, N=2, spinrestricted=True)
         
         expected = [1,2,3,4]
         calculated = set()
@@ -34,7 +34,7 @@ class TestHarmonicsOscillator(unittest.TestCase):
             )
 
     def test_A(self):
-        ho = HarmonicsOscillator(L = 45, omega=2)
+        ho = HarmonicsOscillator(L = 90, N=2, omega=2)
         
         expected = np.array([
             0.7978845608,
