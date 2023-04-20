@@ -23,6 +23,10 @@ class HFbase(ABC):
         pass
 
     def run(self, tol=1e-8, maxiters=1000):
+        if self.has_run:
+            self.has_run = False
+            self.converged = False
+            
         basis = self.basis
         
         L = basis.L_

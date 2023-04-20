@@ -11,9 +11,14 @@ class TestHF(unittest.TestCase):
     Be_spinrestricted = Hydrogen(L=6, N=4, spinrestricted=True).load_TB("hydrogen.txt")
     Be = Hydrogen(L=6, N=4, spinrestricted=False).load_TB("hydrogen.txt")
 
+    rhf_He = RHF(He_spinrestricted)
+    hf_He = HF(He)
+    rhf_Be = RHF(Be_spinrestricted) 
+    hf_Be = HF(Be)
+
     def test_HF_energies(self):
-        rhf_He, hf_He = RHF(self.He_spinrestricted), HF(self.He)
-        rhf_Be, hf_Be = RHF(self.Be_spinrestricted), HF(self.Be) 
+        rhf_He, hf_He = self.rhf_He, self.hf_He
+        rhf_Be, hf_Be = self.rhf_Be, self.hf_Be 
         
         rhf_He.run()
         hf_He.run()
@@ -34,3 +39,20 @@ class TestHF(unittest.TestCase):
             np.isclose(E_spinrestricted_Be, E_Be),
             "Error in Helium Hartree-Fock energy"
         )
+
+    def test_density_matrix_trace(self):
+        expected = [2,4]
+        rhfs, hfs = [self.rhf_He, self.rhf_Be], [self.hf_He, self.hf_Be]
+        for rhf, hf, expect in zip(rhfs, hfs, expected):
+            rhf.run()
+            hf.run()
+
+            self.assertTrue(
+                np.isclose(rhf.rho_.trace(), expect),
+                "Restricted Hartree-Fock trace does not conserve particles"
+            )
+
+            self.assertTrue(
+                np.isclose(hf.rho_.trace(), expect),
+                "Hartree-Fock trace does not conserve particles"
+            )
