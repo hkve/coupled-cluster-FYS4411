@@ -53,12 +53,20 @@ class Basis(ABC):
         for i in range(L):
             for j in range(L):
                 for k in range(L):
-                    for l in range(k+1, L):
-                        v_as[i,j,k,l] = v[i,j,k,l] - [i,j,l,k] 
+                    for l in range(L):
+                        v_as[i,j,k,l] = v[i,j,k,l] - v[i,j,l,k] 
 
-        self.v = v_as
+        self.v_ = v_as
 
         return self
+
+    def fill_with_spin(self, v_elm, i, j, k, l):
+        i, j, k, l = 2*i, 2*j, 2*k, 2*l
+        
+        self.v[i, j, k, l] = v_elm
+        self.v[i+1, j, k+1, l] = v_elm
+        self.v[i, j+1, k, l+1] = v_elm
+        self.v[i+1, j+1, k+1, l+1] = v_elm
 
     def load_elements(self, filename):
         pass

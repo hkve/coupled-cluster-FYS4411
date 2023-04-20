@@ -1,19 +1,27 @@
-from .Basis import SpinRestrictedBasis
+from .Basis import Basis
 import numpy as np
 import re
 from sympy import sympify
 
-class Hydrogen(SpinRestrictedBasis):
-    def __init__(self, L=3, N=1, Z=2, **kwargs):
-        self.shell_numbers_ = [1,2,3]
+class Hydrogen(Basis):
+    def __init__(self, L=6, N=2, spinrestricted=True, Z=2, **kwargs):
+        super().__init__(L=L, N=N, spinrestricted=spinrestricted, **kwargs)
+        self.shell_numbers_ = np.array([1,2,3])
+        self.degeneracies_ = 2*self.shell_numbers_
+        self.cummulative_Ns_ = np.cumsum(self.degeneracies_)
         self.Z_ = Z
-        assert L in self.shell_numbers_, f"{L = } not in {self.shell_numbers_}"
-        super().__init__(L=L, N=N, **kwargs)
+        assert self.degeneracy_*self.L_ in self.cummulative_Ns_, \
+                f"{self.L_ = } does not give a closed shell, must be in {self.cummulative_Ns_//self.degeneracies_}"
 
     def calculate_OB(self):
-        for i in range(self.L_):
-            self.h_[i,i] = -self.Z_**2 / (2*(i+1)**2)
-
+        if self.spinrestricted_:
+            for i in range(self.L_):
+                self.h_[i,i] = -self.Z_**2 / (2*(i+1)**2)
+        else:
+            for i in range(self.L_//2):
+                self.h_[2*i,2*i] = -self.Z_**2 / (2*(i+1)**2)
+                self.h_[2*i+1,2*i+1] = -self.Z_**2 / (2*(i+1)**2)
+    
     def load_elements(self, filename):
         with open(filename, "r") as file:
             for line in file:
@@ -31,5 +39,11 @@ class Hydrogen(SpinRestrictedBasis):
                 elm = re.sub("\]", ")", elm)
                 elm = sympify(elm)
                 
-                
-                self.v_[i,j,k,l] = float(elm.subs("Z", self.Z_))
+                v_elm = float(elm.subs("Z", self.Z_))
+                if self.spinrestricted_:
+                    self.v_[i,j,k,l] = v_elm
+                else:
+                    self.fill_with_spin(v_elm, i, j, k, l)
+
+        if not self.spinrestricted_:
+            self.v_ = np.nan_to_num(self.v)

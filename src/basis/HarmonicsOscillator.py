@@ -9,11 +9,11 @@ class HarmonicsOscillator(Basis):
         self.omega_ = omega
         self.shell_numbers_ = np.arange(1, 10)
         self.degeneracies_ = 2*self.shell_numbers_
-        self.cummulative_Ns_ = [sum(self.degeneracies_[:i]) for i in self.shell_numbers_]
+        self.cummulative_Ns_ = np.cumsum(self.degeneracies_)
 
         super().__init__(L=L, N=N, spinrestricted=spinrestricted, **kwargs)
-        assert self.degeneracy_*self.L_ in self.cummulative_Ns_, f"{self.L_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
-        assert self.degeneracy_*self.N_ in self.cummulative_Ns_, f"{self.N_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
+        assert self.degeneracy_*self.L_ in self.cummulative_Ns_, f"{self.L_ = } does not give a closed shell. Must be in {self.cummulative_Ns_//self.degeneracy_}"
+        assert self.degeneracy_*self.N_ in self.cummulative_Ns_, f"{self.N_ = } does not give a closed shell. Must be in {self.cummulative_Ns_//self.degeneracy_}"
         self.make_mappings()
 
     def make_mappings(self):
