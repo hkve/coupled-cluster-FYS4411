@@ -47,3 +47,4 @@ class Hydrogen(Basis):
 
         if not self.spinrestricted_:
             self.v_ = np.nan_to_num(self.v)
+            self.make_AS()
