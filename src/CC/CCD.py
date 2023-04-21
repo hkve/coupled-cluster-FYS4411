@@ -1,4 +1,5 @@
 import numpy as np
+from einops import repeat
 import textwrap
 
 class CCD:
@@ -7,24 +8,6 @@ class CCD:
         self.has_run = False
         self.converged = False
 
-    def calculate_eps(self):
-        basis = self.basis
-
-        h = basis.h
-        vir_range = basis.L_ - basis.N_
-        occ_range = basis.N_
-
-        N, L = basis.N_, basis.L_
-
-        eps = np.zeros(shape=(vir_range, vir_range, occ_range, occ_range))
-
-        for a in range(N, L):
-            for b in range(N, L):
-                for i in range(0,N):
-                    for j in range(0,N):
-                        eps[a-N,b-N,i,j] = h[i,i] + h[j,j] - h[a,a] - h[b,b]
-
-        return eps
 
     def run(self, tol=1e-5, maxiters=1000):
         basis = self.basis
@@ -36,24 +19,38 @@ class CCD:
 
         # Change this
         t = np.zeros(shape=(vir_range, vir_range, occ_range, occ_range))
-        eps = self.calculate_eps()
+
+        eps_v = np.diag(self.basis.h)[occ_range:]
+        eps_o = np.diag(self.basis.h)[:occ_range]
+
+        eps = -eps_v[:,None,None,None] - eps_v[None,:,None,None] \
+               +eps_o[None,None,:,None] + eps_o[None,None,None,:]
+
+        tri_ij = np.tri(occ_range, k=-1)
+        tri_ab = np.tri(vir_range, k=-1)
+
+        tri_ij = repeat(tri_ij, "i j -> a b i j", a=vir_range, b=vir_range)
+        tri_ab = repeat(tri_ab, "a b -> a b i j", i=occ_range, j=occ_range)
+        tri = np.logical_and(tri_ij, tri_ab)
 
         iters = 0
         diff = 1
         deltaE = 1.0
 
-        # i < j and a < b
         while (iters < maxiters) and (diff > tol):
-            t_next = self.next_iteration(t)/eps
+            t_next = self.next_iteration(t)/eps * tri 
 
-            deltaE_next = 0.25 * np.einsum("ijab,abij", v[occ, occ, vir, vir], t_next)
+            deltaE_next = np.einsum("ijab,abij", v[occ, occ, vir, vir], t_next)
             diff = np.abs(deltaE_next - deltaE)
             
-            if diff > 1e10:
-                raise ValueError(textwrap.dedent(f"""
-                Non-convergence of CCD calculation.
-                {iters = }, {diff =}, {deltaE_next =}
-                """))
+            if iters == 1:
+                print(
+                    deltaE_next
+                )
+                print(
+                    0.25* np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, 1/eps)  
+                )
+            self.check_convergence(diff, iters, deltaE_next)
             deltaE = deltaE_next
             t = t_next
             iters += 1
@@ -61,6 +58,8 @@ class CCD:
         self.has_run = True
         if(iters < maxiters):
             self.converged = True
+            self.final_iters = iters
+            self.final_diff = diff
 
         self.t = t
         self.deltaE = deltaE
@@ -101,6 +100,14 @@ class CCD:
 
         return res
     
+    def check_convergence(self, diff, iters, deltaE):
+        if diff > 1e10:
+            raise ValueError(textwrap.dedent(f"""
+            Non-convergence of CCD calculation.
+            {iters = }, {diff =}, {deltaE =}
+            """))
+
+    
     def __str__(self):
         if not self.has_run:
             return textwrap.dedent(f"""
@@ -115,7 +122,9 @@ class CCD:
             -----------------------------------------
             Results from CCD calculation
                 dE = {self.deltaE} correlation energy
-                converged? {self.converged} 
+                converged? {self.converged}
+                iters = {self.final_iters} used
+                diff = {self.final_diff} at convergence 
             
             Used:
                 L = {self.basis.L_} basis functions
@@ -126,7 +135,8 @@ class CCD:
 if __name__ == '__main__':
     from ..basis.Hydrogen import Hydrogen
     from ..HF.HF import HF
-    basis = Hydrogen(L=6, N=2, Z=2, spinrestricted=False).load_TB("hydrogen.txt")
+    N = 4
+    basis = Hydrogen(L=6, N=N, Z=N, spinrestricted=False).load_TB("hydrogen.txt")
     basis.calculate_OB()
     
     hf = HF(basis)
@@ -138,4 +148,7 @@ if __name__ == '__main__':
     ccd.run()
 
     dE_ccd = ccd.deltaE
+    print(Eref)
+    print(dE_ccd)
     print(Eref + dE_ccd)
+    print(ccd)
