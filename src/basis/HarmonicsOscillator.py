@@ -87,7 +87,7 @@ class HarmonicsOscillator(Basis):
     def calculate_TB(self):
         from quantum_systems import TwoDimensionalHarmonicOscillator
         rL = self.L_//2 # restricted L
-        tdho = TwoDimensionalHarmonicOscillator(rL, 5, 11)
+        tdho = TwoDimensionalHarmonicOscillator(rL, 5, 11, omega=self.omega_)
         if self.spinrestricted_:
             self.v_ = tdho.u
         else:

@@ -85,6 +85,7 @@ class Basis(ABC):
     
     def evaluate_energy(self):
         if self.spinrestricted_:
-            pass
+            raise NotImplementedError("Do this")
         else:
-            return self.h.trace() + 0.5*np.einsum("ijij", self.v)
+            occ = self.occ_
+            return self.h[occ,occ].trace() + 0.5*np.einsum("ijij", self.v[occ,occ,occ,occ])
