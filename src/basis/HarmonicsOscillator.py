@@ -85,19 +85,22 @@ class HarmonicsOscillator(Basis):
         return self.A(*n_p)*self.A(*n_q)*self.A(*n_r)*self.A(*n_s) * I / self.omega**(3/2)
 
     def calculate_TB(self):
-        L = self.L_
-        v = self.v_
+        from quantum_systems import TwoDimensionalHarmonicOscillator
+        rL = self.L_//2 # restricted L
+        tdho = TwoDimensionalHarmonicOscillator(rL, 5, 11)
+        if self.spinrestricted_:
+            self.v_ = tdho.u
+        else:
+            for i in range(rL):
+                for j in range(rL):
+                    for k in range(rL):
+                        for l in range(rL):
+                            self.fill_with_spin(tdho.u[i,j,k,l], i,j,k,l)
 
-        for p in range(L):
-            for q in range(L):
-                for r in range(L):
-                    for s in range(L):
-                        if np.isnan(v[p,q,r,s]):
-                            v[p,q,r,s] = self.matrix_element(p,q,r,s)
-                            v[q,p,s,r] = v[p,q,r,s]
-                        else:
-                            continue
-    
+            self.make_AS()
+                
+        return self
+ 
     def calculate_OB(self):
         """
         Calculate unperturbed matrix elements for the Harmonics Oscillator
@@ -109,10 +112,9 @@ class HarmonicsOscillator(Basis):
                 k += 1
             self.h_[i,i] = self.omega_*(self.shell_numbers_[k])
 
+        return self
 if __name__ == '__main__':
     ho = HarmonicsOscillator(L = 20, N=12, spinrestricted=False)
-    ho.calculate_OB()
-    
-    print(ho.shell_numbers_, ho.cummulative_Ns_)
-    for (k1,v1), (k2, v2) in zip(ho.n_to_p_.items(), ho.p_to_n_.items()):
-        print(k1, v1, k2, v2)
+    # ho.calculate_OB()
+    # ho.calculate_TB()
+    # ho.make_AS()
