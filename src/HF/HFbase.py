@@ -75,9 +75,9 @@ class HFbase(ABC):
         if not self.converged:
             raise RuntimeWarning("Hartree-Fock calculation has not converged")
         
-        h_prime = np.einsum("ia,jb,ab->ij", self.C_, self.C_, basis.h)
-        v_prime = np.einsum("ia,jb,kg,ld,abgd->ijkl", self.C_, self.C_, self.C_, self.C_, basis.v)
-
+        h_prime = np.einsum("ia,jb,ab->ij", self.C_, self.C_, basis.h, optimize=True)
+        v_prime = np.einsum("ia,jb,kg,ld,abgd->ijkl", self.C_, self.C_, self.C_, self.C_, basis.v, optimize=True)
+        
         basis.h_ = h_prime
         basis.v_ = v_prime
 

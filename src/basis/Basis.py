@@ -21,7 +21,7 @@ class Basis(ABC):
         self.N_ = N
 
         self.h_ = np.zeros((L, L), dtype=float)
-        self.v_ = np.zeros((L, L, L, L), dtype=float)*np.nan
+        self.v_ = np.zeros((L, L, L, L), dtype=float)
         
         self.occ_ = slice(0,N)
         self.vir_ = slice(N,L)
@@ -57,7 +57,6 @@ class Basis(ABC):
                         v_as[i,j,k,l] = v[i,j,k,l] - v[i,j,l,k] 
 
         self.v_ = v_as
-
         return self
 
     def fill_with_spin(self, v_elm, i, j, k, l):
@@ -83,3 +82,9 @@ class Basis(ABC):
         self.load_elements(path)
 
         return self
+    
+    def evaluate_energy(self):
+        if self.spinrestricted_:
+            pass
+        else:
+            return self.h.trace() + 0.5*np.einsum("ijij", self.v)
