@@ -9,7 +9,7 @@ class CCD:
         self.converged = False
 
 
-    def run(self, tol=1e-5, maxiters=1000):
+    def run(self, tol=1e-5, maxiters=1000, vocal=False):
         basis = self.basis
         v = basis.v_
         occ, vir = self.basis.occ_, self.basis.vir_
@@ -26,30 +26,31 @@ class CCD:
         eps = -eps_v[:,None,None,None] - eps_v[None,:,None,None] \
                +eps_o[None,None,:,None] + eps_o[None,None,None,:]
 
-        tri_ij = np.tri(occ_range, k=-1)
-        tri_ab = np.tri(vir_range, k=-1)
+        # tri_ij = np.tri(occ_range, k=-1)
+        # tri_ab = np.tri(vir_range, k=-1)
 
-        tri_ij = repeat(tri_ij, "i j -> a b i j", a=vir_range, b=vir_range)
-        tri_ab = repeat(tri_ab, "a b -> a b i j", i=occ_range, j=occ_range)
-        tri = np.logical_and(tri_ij, tri_ab)
+        # tri_ij = repeat(tri_ij, "i j -> a b i j", a=vir_range, b=vir_range)
+        # tri_ab = repeat(tri_ab, "a b -> a b i j", i=occ_range, j=occ_range)
+        # tri = np.logical_and(tri_ij, tri_ab)
 
         iters = 0
-        diff = 1
-        deltaE = 1.0
+        diff = 200
+        deltaE = 200
 
         while (iters < maxiters) and (diff > tol):
-            t_next = self.next_iteration(t)/eps * tri 
+            t_next = t/eps + self.next_iteration(t)/eps
 
-            deltaE_next = np.einsum("ijab,abij", v[occ, occ, vir, vir], t_next)
+            deltaE_next = 0.25*np.einsum("ijab,abij", v[occ, occ, vir, vir], t_next)
             diff = np.abs(deltaE_next - deltaE)
             
-            if iters == 1:
-                print(
-                    deltaE_next
-                )
-                print(
-                    0.25* np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, 1/eps)  
-                )
+            if iters == 0:
+                E_ccd0 = deltaE_next
+                E_mp2 = 0.25* np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, 1/eps)
+                assert np.isclose(E_ccd0, E_mp2)
+
+            if vocal:
+                self.beVocal(diff, deltaE_next, deltaE, iters)
+
             self.check_convergence(diff, iters, deltaE_next)
             deltaE = deltaE_next
             t = t_next
@@ -96,10 +97,24 @@ class CCD:
 
         # Only P(ab) term, double t sum over klcd
         tp = np.einsum("klcd,aclk,dbij->abij", v[occ, occ, vir, vir], t, t, optimize=True)
-        res -= 0.5*(tp - tp.transpose(0,1,3,2))
-
+        res -= 0.5*(tp - tp.transpose(1,0,2,3))
+        
         return res
-    
+
+    def evaluate_energy(self, correlation=False):
+        if not self.has_run:
+            raise UserWarning("Did not run?")
+            return None
+        if not self.converged:
+            raise UserWarning("Did not converge :(")
+            return None
+        
+        E = self.deltaE
+        if not correlation:
+            E += self.basis.evaluate_energy()
+
+        return E
+
     def check_convergence(self, diff, iters, deltaE):
         if diff > 1e10:
             raise ValueError(textwrap.dedent(f"""
@@ -107,6 +122,10 @@ class CCD:
             {iters = }, {diff =}, {deltaE =}
             """))
 
+    def beVocal(self, diff, deltaE_next, deltaE, iters):
+        print(textwrap.dedent(f"""
+        {diff = }, {deltaE = }, {deltaE_next = }, {iters = }
+        """))
     
     def __str__(self):
         if not self.has_run:
@@ -131,6 +150,7 @@ class CCD:
                 N = {self.basis.N_} occupied functions
             -----------------------------------------
         """)
+    
 
 if __name__ == '__main__':
     from ..basis.Hydrogen import Hydrogen
