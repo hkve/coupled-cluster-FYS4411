@@ -7,6 +7,7 @@ class Basis(ABC):
     def __init__(self, L, N, spinrestricted, **kwargs):
         self.spinrestricted_ = spinrestricted
         self.degeneracy_ = 1
+        self.is_AS_ = False
 
         if spinrestricted:
             assert not N%2, f"{N = } must be even when using spinrestricted"
@@ -48,15 +49,17 @@ class Basis(ABC):
     def make_AS(self):
         assert not self.spinrestricted_, f"To use antisymmetric matrix elements, the basis can not be spinrestricted."
         L = self.L_
-        v_as = np.zeros_like(self.v)
+        v_AS = np.zeros_like(self.v)
         v = self.v
         for i in range(L):
             for j in range(L):
                 for k in range(L):
                     for l in range(L):
-                        v_as[i,j,k,l] = v[i,j,k,l] - v[i,j,l,k] 
+                        v_AS[i,j,k,l] = v[i,j,k,l] - v[i,j,l,k] 
 
-        self.v_ = v_as
+        self.v_ = v_AS
+        self.is_AS_ = True
+
         return self
 
     def fill_with_spin(self, v_elm, i, j, k, l):
@@ -84,8 +87,11 @@ class Basis(ABC):
         return self
     
     def evaluate_energy(self):
+        occ = self.occ_
         if self.spinrestricted_:
-            raise NotImplementedError("Do this")
+            return 2*self.h[occ,occ].trace() + \
+                   2*np.einsum("ijij", self.v[occ,occ,occ,occ]) \
+                   - np.einsum("ijji", self.v[occ,occ,occ,occ])
         else:
-            occ = self.occ_
-            return self.h[occ,occ].trace() + 0.5*np.einsum("ijij", self.v[occ,occ,occ,occ])
+            return self.h[occ,occ].trace()\
+                   + 0.5*np.einsum("ijij", self.v[occ,occ,occ,occ])

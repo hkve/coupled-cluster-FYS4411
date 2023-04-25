@@ -35,7 +35,13 @@ if __name__ == '__main__':
     hy = Hydrogen(L=6, N=4, spinrestricted=False, Z=4).load_TB("hydrogen.txt")
     hy.calculate_OB()
 
+    print(hy.evaluate_energy())
     hf = HF(hy)
-    hf.run(maxiters=20)
-    E = hf.evalute_energy()
+    hf.run()
+    E = hf.evaluate_energy()
+    print(E)
+
+    hy = hf.perform_basis_change(hy)
+
+    E = hy.evaluate_energy()
     print(E)
