@@ -25,10 +25,10 @@ class TestHF(unittest.TestCase):
         rhf_Be.run()
         hf_Be.run()
 
-        E_spinrestricted_He = rhf_He.evalute_energy()
-        E_He = hf_He.evalute_energy()
-        E_spinrestricted_Be = rhf_Be.evalute_energy()
-        E_Be = hf_Be.evalute_energy()
+        E_spinrestricted_He = rhf_He.evaluate_energy()
+        E_He = hf_He.evaluate_energy()
+        E_spinrestricted_Be = rhf_Be.evaluate_energy()
+        E_Be = hf_Be.evaluate_energy()
         
         self.assertTrue(
             np.isclose(E_spinrestricted_He, E_He),

@@ -38,14 +38,14 @@ class CCD:
         deltaE = 200
 
         while (iters < maxiters) and (diff > tol):
-            t_next = t/eps + self.next_iteration(t)/eps
+            t_next = self.next_iteration(t)/eps
 
             deltaE_next = 0.25*np.einsum("ijab,abij", v[occ, occ, vir, vir], t_next)
             diff = np.abs(deltaE_next - deltaE)
             
             if iters == 0:
                 E_ccd0 = deltaE_next
-                E_mp2 = 0.25* np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, 1/eps)
+                E_mp2 = 0.25 * np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, 1/eps)
                 assert np.isclose(E_ccd0, E_mp2)
 
             if vocal:
@@ -89,11 +89,11 @@ class CCD:
         
         # First P(ij) permutation, double t sum over klcd
         tp = np.einsum("klcd,acik,bdjl->abij", v[occ, occ, vir, vir], t, t, optimize=True)
-        res += tp - tp.transpose(0,1,3,2)
+        res += (tp - tp.transpose(0,1,3,2))
 
         # second P(ij) permutation, double t sum over klcd
         tp = np.einsum("klcd,dcik,ablj->abij", v[occ, occ, vir, vir], t, t, optimize=True)
-        res -= 0.5*(tp + tp.transpose(0,1,3,2))
+        res -= 0.5*(tp - tp.transpose(0,1,3,2))
 
         # Only P(ab) term, double t sum over klcd
         tp = np.einsum("klcd,aclk,dbij->abij", v[occ, occ, vir, vir], t, t, optimize=True)
@@ -155,13 +155,13 @@ class CCD:
 if __name__ == '__main__':
     from ..basis.Hydrogen import Hydrogen
     from ..HF.HF import HF
-    N = 4
+    N = 2
     basis = Hydrogen(L=6, N=N, Z=N, spinrestricted=False).load_TB("hydrogen.txt")
     basis.calculate_OB()
     
     hf = HF(basis)
     hf.run()
-    Eref = hf.evalute_energy()
+    Eref = hf.evaluate_energy()
     basis = hf.perform_basis_change(basis)
 
     ccd = CCD(basis)

@@ -62,7 +62,7 @@ class HFbase(ABC):
         self.C_ = C
 
 
-    def evalute_energy(self):
+    def evaluate_energy(self):
         if not self.has_run:
             raise RuntimeError("No Hartree-Fock calculation has been run. Perform .run() first.")
         if not self.converged:
