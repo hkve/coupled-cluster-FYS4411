@@ -56,3 +56,17 @@ class TestHF(unittest.TestCase):
                 np.isclose(hf.rho_.trace(), expect),
                 "Hartree-Fock trace does not conserve particles"
             )
+
+    def test_basis_change(self):
+        hf_He, He = self.hf_He, self.He
+        hf_He.run()
+
+        Ehf = hf_He.evaluate_energy()
+        
+        He = hf_He.perform_basis_change(He)
+        Eref = He.evaluate_energy()
+
+        self.assertTrue(
+            np.isclose(Ehf, Eref),
+            "After basis change, Eref is not equal to HF energy"
+        )
