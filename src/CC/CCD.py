@@ -1,15 +1,16 @@
 import numpy as np
-from einops import repeat
 import textwrap
 
 class CCD:
     def __init__(self, basis, **kwargs):
+        assert not basis.spinrestricted_, f"Unrestricted CCD requires general matrix elements"
+        assert basis.is_AS_, f"Unrestricted CCD requires antisymmetric matrix elements" 
         self.basis = basis
         self.has_run = False
         self.converged = False
 
 
-    def run(self, tol=1e-5, maxiters=1000, vocal=False):
+    def run(self, tol=1e-5, maxiters=1000, p=0, vocal=False):
         basis = self.basis
         v = basis.v_
         occ, vir = self.basis.occ_, self.basis.vir_
@@ -26,26 +27,21 @@ class CCD:
         eps = -eps_v[:,None,None,None] - eps_v[None,:,None,None] \
                +eps_o[None,None,:,None] + eps_o[None,None,None,:]
 
-        # tri_ij = np.tri(occ_range, k=-1)
-        # tri_ab = np.tri(vir_range, k=-1)
-
-        # tri_ij = repeat(tri_ij, "i j -> a b i j", a=vir_range, b=vir_range)
-        # tri_ab = repeat(tri_ab, "a b -> a b i j", i=occ_range, j=occ_range)
-        # tri = np.logical_and(tri_ij, tri_ab)
+        epsinv = 1/eps
 
         iters = 0
         diff = 200
         deltaE = 200
 
         while (iters < maxiters) and (diff > tol):
-            t_next = self.next_iteration(t)/eps
+            t_next = t*p + (1-p)*self.next_iteration(t)*epsinv 
 
             deltaE_next = 0.25*np.einsum("ijab,abij", v[occ, occ, vir, vir], t_next)
             diff = np.abs(deltaE_next - deltaE)
             
-            if iters == 0:
+            if iters == 0 and p == 0:
                 E_ccd0 = deltaE_next
-                E_mp2 = 0.25 * np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, 1/eps)
+                E_mp2 = 0.25 * np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, epsinv)
                 assert np.isclose(E_ccd0, E_mp2)
 
             if vocal:
@@ -75,9 +71,9 @@ class CCD:
         occ, vir = self.basis.occ_, self.basis.vir_
 
         res = v[vir, vir, occ, occ] # v_abij
-        
+
         # Two first sums, over cd and kl
-        res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t, optimize=True)
+        res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t, optimize=True, out=term)
         res += 0.5*np.einsum("klij,abkl->abij", v[occ, occ, occ, occ], t, optimize=True)
 
         # First permutation term, P(ij|ab), over kc
