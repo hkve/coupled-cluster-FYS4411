@@ -46,6 +46,45 @@ class Basis(ABC):
     def find_folder(self):
         print(__file__)
 
+    def restricted_to_unrestricted(self):
+        L_new = 2*self.L_
+        h_new = np.zeros(shape=(L_new, L_new))
+
+        for i in range(self.L_):
+            for j in range(self.L_):
+                h_new[2*i,2*j] = self.h[i,j]
+                h_new[2*i+1,2*j+1] = self.h[i,j]
+
+        h_new2 = np.kron(self.h, np.eye(2))
+        np.testing.assert_allclose(h_new, h_new2)
+
+        v_new = np.zeros(shape=(L_new, L_new, L_new, L_new))
+        for i in range(self.L_):
+            for j in range(self.L_):
+                for k in range(self.L_):
+                    for l in range(self.L_):
+                        v_new[2*i, 2*j, 2*k, 2*l] = self.v[i,j,k,l]
+                        v_new[2*i+1, 2*j, 2*k+1, 2*l] = self.v[i,j,k,l]
+                        v_new[2*i, 2*j+1, 2*k, 2*l+1] = self.v[i,j,k,l]
+                        v_new[2*i+1, 2*j+1, 2*k+1, 2*l+1] = self.v[i,j,k,l]
+        
+        extend = np.einsum("pr, qs -> pqrs", np.eye(2), np.eye(2))
+        v_new2 = np.kron(self.v, extend)
+        np.testing.assert_allclose(v_new, v_new2)
+        
+        self.h_ = h_new
+        self.v_ = v_new
+
+
+        self.L_ *= 2
+        self.N_ *= 2
+        self.occ_ = slice(0,self.N_)
+        self.vir_ = slice(self.N_,self.L_)
+        self.spinrestricted_ = False
+        self.degeneracy_ = 1
+
+        self.make_AS()
+
     def make_AS(self):
         assert not self.spinrestricted_, f"To use antisymmetric matrix elements, the basis can not be spinrestricted."
         L = self.L_
@@ -94,4 +133,5 @@ class Basis(ABC):
                    - np.einsum("ijji", self.v[occ,occ,occ,occ])
         else:
             return self.h[occ,occ].trace()\
-                   + 0.5*np.einsum("ijij", self.v[occ,occ,occ,occ])
+                   + 0.5*np.einsum("ijij", self.v[occ,occ,occ,occ]) \
+                    

@@ -9,7 +9,9 @@ class CCD:
         self.has_run = False
         self.converged = False
 
-
+        self.f = basis.h + np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_])
+    
+    
     def run(self, tol=1e-5, maxiters=1000, p=0, vocal=False):
         basis = self.basis
         v = basis.v_
@@ -18,11 +20,12 @@ class CCD:
         vir_range = basis.L_ - basis.N_
         occ_range = basis.N_
 
-        # Change this
         t = np.zeros(shape=(vir_range, vir_range, occ_range, occ_range))
 
-        eps_v = np.diag(self.basis.h)[occ_range:]
-        eps_o = np.diag(self.basis.h)[:occ_range]
+        # eps_v = np.diag(self.basis.h)[occ_range:]
+        # eps_o = np.diag(self.basis.h)[:occ_range]
+        eps_v = np.diag(self.f)[occ_range:]
+        eps_o = np.diag(self.f)[:occ_range]
 
         eps = -eps_v[:,None,None,None] - eps_v[None,:,None,None] \
                +eps_o[None,None,:,None] + eps_o[None,None,None,:]
@@ -30,8 +33,8 @@ class CCD:
         epsinv = 1/eps
 
         iters = 0
-        diff = 200
-        deltaE = 200
+        diff = 321
+        deltaE = 321
 
         while (iters < maxiters) and (diff > tol):
             t_next = t*p + (1-p)*self.next_iteration(t)*epsinv 
@@ -39,10 +42,11 @@ class CCD:
             deltaE_next = 0.25*np.einsum("ijab,abij", v[occ, occ, vir, vir], t_next)
             diff = np.abs(deltaE_next - deltaE)
             
+            # np.testing.assert_allclose(t_next, -t_next.transpose(1,0,2,3), atol=1e-13)
             if iters == 0 and p == 0:
                 E_ccd0 = deltaE_next
                 E_mp2 = 0.25 * np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, epsinv)
-                assert np.isclose(E_ccd0, E_mp2)
+                assert np.isclose(E_ccd0, E_mp2), f"First iteration of CCD did not reproduce MP2 energy, {E_ccd0 = }, {E_mp2 =}"
 
             if vocal:
                 self.beVocal(diff, deltaE_next, deltaE, iters)
@@ -61,19 +65,22 @@ class CCD:
         self.t = t
         self.deltaE = deltaE
 
-        # E_ccd_contri = 0.25 * np.einsum("ijab,abij", v[occ, occ, vir, vir], t_next)
-        # E_mp2 = 0.25* np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, 1/eps)
-        # print(E_ccd_contri)
-        # print(E_mp2)
 
     def next_iteration(self, t):
+        f = self.f
         v = self.basis.v_
         occ, vir = self.basis.occ_, self.basis.vir_
 
-        res = v[vir, vir, occ, occ] # v_abij
+        res = v[vir, vir, occ, occ].copy() # v_abij
+
+        # tp = np.einsum("bk,acij->abij", f[vir, vir], t)
+        # res += (tp - tp.transpose(1,0,2,3))
+
+        # tp = np.einsum("kj,abik->abij", f[occ, occ], t)
+        # res -= (tp - tp.transpose(0,1,3,2))
 
         # Two first sums, over cd and kl
-        res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t, optimize=True, out=term)
+        res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t, optimize=True)
         res += 0.5*np.einsum("klij,abkl->abij", v[occ, occ, occ, occ], t, optimize=True)
 
         # First permutation term, P(ij|ab), over kc
