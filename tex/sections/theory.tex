@@ -5,6 +5,12 @@ Define shortly
 \end{align}
 creation and annihilation, anitcommutators, normal order, Hamiltonian, normal order Hamiltonian, 
 
+\begin{align}
+    \hat{H}\ket{\Psi} = E \ket{\Psi} \label[eq]{eq:theo:schroding_equation}
+\end{align}
+
+\subsection{Hartree-Fock}
+a
 \subsection{Coupled Cluster}
 The exact solution $\ket{\Psi}$ is approximated by an exponential ansatz $\ketCC$ 
 \begin{align}
@@ -27,7 +33,18 @@ Considering $N$ cluster operators in the exponential ansatz of \cref{eq:theo:exp
     \ket{\Psi} &\approx \ketCC \approx \ketCCD \equiv \exp{\cluster{2}} \ketansatz \label[eq]{eq:theo:CCD_exponential_ansatz}, \\
     \cluster{2} &= \frac{1}{4}\sum_{abij} \amplitude{ab}{ij}\set{ \crt{a} \ani{i} \crt{b}\ani{j}} \label[eq]{eq:theo:CCD_cluster},
 \end{align}
-with the four-fold amplitude permutation symmetry \footnote{For double amplitudes, the index permutation symmetry is equal to that of antisymmetrized two-body matrix elements $\elmAS{pq}{rs}$.}.
+with the four-fold amplitude permutation symmetry \footnote{For double amplitudes, the index permutation symmetry is equal to that of antisymmetrized two-body matrix elements $\elmAS{pq}{rs}$.},
 \begin{align}
-    \amplitude{ab}{ij} = - \amplitude{ba}{ij} = - \amplitude{ab}{ji} = \amplitude{ba}{ji} \label[eq]{eq:theo:CCD_amplitude_symmetry}
+    \amplitude{ab}{ij} = - \amplitude{ba}{ij} = - \amplitude{ab}{ji} = \amplitude{ba}{ji}. \label[eq]{eq:theo:CCD_amplitude_symmetry}
 \end{align}
+Incorporating the CCD approximation in the Schr\"odinger equation (\cref{eq:theo:schroding_equation}), we see that
+\begin{align}
+    \ham \exp{\cluster{2}} \ketansatz &= E \exp{\cluster{2}} \nonumber \ketansatz,  \\
+    \hamno \exp{\cluster{2}} \ketansatz &= \ECCD \exp{\cluster{2}} \ketansatz, \label[eq]{eq:theo:schroding_equation_CCD}
+\end{align}
+where $\ECCD = E-\Eref$. Expanding both sides and taking the inner product with $\braansatz$, we in principle get an equation for the energy. However, this approach is not amenable to practical computer implementation \citep{bartlettCoupledClusterMethodsMolecular1984} since the amplitude equation will be coupled with the energy equation. Therefor, we rather apply a similarity transform to \cref{eq:theo:schroding_equation_CCD} by multiplying by the inverse of $\exp{\cluster{2}}$,
+\begin{align}
+    \exp{-\cluster{2}} \hamno \exp{-\cluster{2}} \ketansatz &= \ECCD \ketansatz \nonumber \\
+    \braansatz \simham \ketansatz &= \ECCD \label[eq]{eq:theo:energy_equation_sim_transformed}
+\end{align}
+where $\simham = \exp{-\cluster{2}} \hamno \exp{-\cluster{2}}$. \comment{Ask oyvind about $\braexed{ab}{ij}$ equation}
