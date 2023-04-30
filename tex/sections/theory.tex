@@ -1,0 +1,33 @@
+\subsection{Mathematical framework and notation}
+Define shortly
+\begin{align}
+    N, L, R
+\end{align}
+creation and annihilation, anitcommutators, normal order, Hamiltonian, normal order Hamiltonian, 
+
+\subsection{Coupled Cluster}
+The exact solution $\ket{\Psi}$ is approximated by an exponential ansatz $\ketCC$ 
+\begin{align}
+    \ket{\Psi} \approx \ketCC \equiv \exp{\cluster{}} \ketansatz. \label[eq]{eq:theo:exponential_ansatz}
+\end{align}
+The operators $\cluster{} = \cluster{1} + \cluster{2} + \ldots$ acting on the ground state ansatz $\ketansatz$ are the so-called \textit{cluster operators} defined as
+\begin{align}
+    \cluster{m} = \frac{1}{(m!)^2} \sum_{\substack{ab\ldots\\ij\ldots}} \amplitude{ab\ldots}{ij\ldots} \set{\crt{a}\ani{i} \crt{b} \ani{j}\ldots} \label[eq]{eq:theo:cluster_operators_general}
+\end{align}
+where $m \leq N$. The scalars $\amplitude{ab\ldots}{ij\ldots}$ are unknown expansion coefficients called \textit{amplitudes}, which we need to solve for. All the creation and annihilation operators of \cref{eq:theo:cluster_operators_general} anticommute, giving the restriction that
+
+\begin{align}
+    \amplitude{\hat{P}(ab\ldots)}{\hat{P}'(ij\ldots)} = (-1)^{\sigma(\hat{P})+\sigma(\hat{P}')} \amplitude{ab\ldots}{ij\ldots}. \label[eq]{eq:theo:amplitude_permutation_symmetry}
+\end{align}
+Here $P$ and $P'$ permutes $\sigma(P)$ and $\sigma(P')$ indices respectively. This is the reason for the prefactor of \cref{eq:theo:cluster_operators_general}, since we have $m!$ ways to independently permute particle and hole indices. Instead of having $(L-N)^m N^m$ independent unknowns, we reduce this number by a factor of $(m!)^{2}$. 
+
+\subsection{Doubles truncation}
+Considering $N$ cluster operators in the exponential ansatz of \cref{eq:theo:exponential_ansatz} is not computationally feasible for realistic systems. The common practice is to include one or more $\cluster{m}$ operators, making a truncation on $\ketCC$ as well. In the following we will include only the double excitation operator $\cluster{2}$, know as the CCD approximation. This gives us 
+\begin{align}
+    \ket{\Psi} &\approx \ketCC \approx \ketCCD \equiv \exp{\cluster{2}} \ketansatz \label[eq]{eq:theo:CCD_exponential_ansatz}, \\
+    \cluster{2} &= \frac{1}{4}\sum_{abij} \amplitude{ab}{ij}\set{ \crt{a} \ani{i} \crt{b}\ani{j}} \label[eq]{eq:theo:CCD_cluster},
+\end{align}
+with the four-fold amplitude permutation symmetry \footnote{For double amplitudes, the index permutation symmetry is equal to that of antisymmetrized two-body matrix elements $\elmAS{pq}{rs}$.}.
+\begin{align}
+    \amplitude{ab}{ij} = - \amplitude{ba}{ij} = - \amplitude{ab}{ji} = \amplitude{ba}{ji} \label[eq]{eq:theo:CCD_amplitude_symmetry}
+\end{align}
