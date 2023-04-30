@@ -31,14 +31,10 @@ h_bar.repartition(cache=True)
 
 Energy_equation = h_bar.eval_fermi_vev().simplify()
 
-p1h1 = c_dag[i]*c_[a]
-Amplitude_equation1 = (p1h1 * h_bar).eval_fermi_vev().simplify()
-
 p2h2 = c_dag[i]*c_dag[j]*c_[b]*c_[a]
 Amplitude_equation2 = (p2h2 * h_bar).eval_fermi_vev().simplify()
 
 
-with dr.report("out/ccd.html", "ccd") as rep:
+with dr.report("out/ccd.html", "CCD equations") as rep:
     rep.add("Energy equation", Energy_equation)
-    rep.add("1p1h amplitude equation", Amplitude_equation1)
     rep.add("2p2h amplitude equation", Amplitude_equation2)

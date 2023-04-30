@@ -71,9 +71,11 @@ class CCD:
         v = self.basis.v_
         occ, vir = self.basis.occ_, self.basis.vir_
 
-        res = v[vir, vir, occ, occ].copy() # v_abij
+        res = np.zeros_like(t)
 
-        # tp = np.einsum("bk,acij->abij", f[vir, vir], t)
+        res += v[vir, vir, occ, occ] # v_abij
+
+        # tp = np.einsum("bc,acij->abij", f[vir, vir], t)
         # res += (tp - tp.transpose(1,0,2,3))
 
         # tp = np.einsum("kj,abik->abij", f[occ, occ], t)
