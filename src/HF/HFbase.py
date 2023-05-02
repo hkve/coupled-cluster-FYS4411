@@ -7,12 +7,8 @@ class HFbase(ABC):
         self.has_run = False
         self.converged = False
 
-        self.particles_per_slot_ = 1
-        if basis.spinrestricted_:
-            self.particles_per_slot_ = 2
-
     def density_matrix(self, C):
-        return self.particles_per_slot_*np.einsum("ai,bi->ab", C[:,self.basis.occ], C[:,self.basis.occ])
+        return self.basis.degeneracy_*np.einsum("ai,bi->ab", C[:,self.basis.occ], C[:,self.basis.occ])
 
     @abstractmethod
     def evaluate_energy_scheme(self):
