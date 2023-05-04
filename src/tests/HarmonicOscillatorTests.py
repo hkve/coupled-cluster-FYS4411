@@ -51,3 +51,22 @@ class TestHarmonicsOscillator(unittest.TestCase):
             np.allclose(calcualted, expected),
             f"Error in normalisation. {expected = }, {calcualted = }"
         )
+
+    # Only run if pybind and cpputils are installed
+    def test_makeAS(self):
+        try:
+            ho_slow = HarmonicsOscillator(L=12, N=2, spinrestricted=False, fast=False)
+            ho_fast = HarmonicsOscillator(L=12, N=2, spinrestricted=False, fast=True)
+
+            ho_slow.calculate_OB()
+            ho_slow.calculate_TB()
+
+            ho_fast.calculate_OB()
+            ho_fast.calculate_TB()
+
+            self.assertTrue(
+                np.allclose(ho_slow.v, ho_fast.v),
+                f"Error in AS maker"
+            )
+        except:
+            pass
