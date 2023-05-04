@@ -1,1 +1,1 @@
-py -m pip install ./cpputils
+python3 -m pip install ./cpputils

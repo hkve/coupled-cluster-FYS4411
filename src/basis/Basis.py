@@ -67,7 +67,7 @@ class Basis(ABC):
 
         print("Going fast...")
         self.large_loops = {
-            "make_AS": cpputils.makeAS
+            "make_AS": cpputils.make_AS
         }
     def make_AS_python(self, v, v_AS):
         L = self.L_

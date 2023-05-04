@@ -4,7 +4,7 @@ from ..HF.HF import HF, RHF
 import numpy as np
 
 def main():
-    ho = HarmonicsOscillator(L=12, N=2, spinrestricted=True)
+    ho = HarmonicsOscillator(L=72, N=2, spinrestricted=True, fast=True)
     ho.calculate_OB()
     ho.calculate_TB()
 

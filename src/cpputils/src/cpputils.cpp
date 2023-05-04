@@ -35,7 +35,7 @@ py::array_t<double> wrapper(py::array_t<double> array_old, py::array_t<double> a
   auto buf_new = array_new.request();
   double* ptr_new = (double*) buf_new.ptr;
 
-  makeAS(ptr_old, ptr_new, N);
+  make_AS(ptr_old, ptr_new, N);
 
   return array_new;
 }
@@ -46,5 +46,5 @@ PYBIND11_MODULE(cpputils, m) {
   //           sum(data.data(), data.size());
   //           return data;
   //       });
-  m.def("makeAS", &wrapper, "sdasd");
+  m.def("make_AS", &wrapper, "sdasd");
 }
