@@ -12,8 +12,8 @@ class HarmonicsOscillator(Basis):
         self.cummulative_Ns_ = np.cumsum(self.degeneracies_)
 
         super().__init__(L=L, N=N, spinrestricted=spinrestricted, **kwargs)
-        assert self.degeneracy_*self.L_ in self.cummulative_Ns_, f"{self.L_ = } does not give a closed shell. Must be in {self.cummulative_Ns_//self.degeneracy_}"
-        assert self.degeneracy_*self.N_ in self.cummulative_Ns_, f"{self.N_ = } does not give a closed shell. Must be in {self.cummulative_Ns_//self.degeneracy_}"
+        assert self.degeneracy_*self.L_ in self.cummulative_Ns_, f"{self.L_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
+        assert self.degeneracy_*self.N_ in self.cummulative_Ns_, f"{self.N_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
         self.make_mappings()
 
     def make_mappings(self):

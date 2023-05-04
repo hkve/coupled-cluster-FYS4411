@@ -27,6 +27,19 @@ class Basis(ABC):
         self.occ_ = slice(0,N)
         self.vir_ = slice(N,L)
 
+        self.large_loops = {
+            "make_AS": self.make_AS_python,
+        }
+
+        default_args = {
+            "fast": False
+        }
+
+        default_args.update(kwargs)
+
+        if default_args["fast"]:
+            self.setup_fast_functions()
+
     @property
     def h(self):
         return self.h_
@@ -45,6 +58,28 @@ class Basis(ABC):
 
     def find_folder(self):
         print(__file__)
+
+    def setup_fast_functions(self):
+        try:
+            import cpputils
+        except:
+            raise ImportError("cpputils is not installed!")
+
+        print("Going fast...")
+        self.large_loops = {
+            "make_AS": cpputils.makeAS
+        }
+    def make_AS_python(self, v, v_AS):
+        L = self.L_
+        for i in range(L):
+            for j in range(L):
+                for k in range(L):
+                    for l in range(L):
+                        elm = v[i,j,k,l] - v[i,j,l,k]
+                        v_AS[i,j,k,l] = elm
+                        v_AS[i,j,l,k] = -elm
+                        v_AS[j,i,k,l] = -elm
+                        v_AS[j,i,l,k] = elm
 
     def restricted_to_unrestricted(self):
         L_new = 2*self.L_
@@ -90,15 +125,12 @@ class Basis(ABC):
         L = self.L_
         v_AS = np.zeros_like(self.v)
         v = self.v
-        for i in range(L):
-            for j in range(L):
-                for k in range(L):
-                    for l in range(L):
-                        v_AS[i,j,k,l] = v[i,j,k,l] - v[i,j,l,k] 
+
+        self.large_loops["make_AS"](v, v_AS)
 
         self.v_ = v_AS
         self.is_AS_ = True
-
+        
         return self
 
     def fill_with_spin(self, v_elm, i, j, k, l):
