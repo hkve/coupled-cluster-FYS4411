@@ -12,7 +12,6 @@ def main():
     hf.run()
     ho = hf.perform_basis_change(ho)
     ho.restricted_to_unrestricted()
-    print(np.round(ho.h, 2))
     print(ho.evaluate_energy())
     ccd = CCD(ho)
     ccd.run(tol=1e-8, p=0.3)

@@ -7,7 +7,7 @@ class CCD(CCbase):
         assert not basis.spinrestricted_, f"Unrestricted CCD requires general matrix elements"
         assert basis.is_AS_, f"Unrestricted CCD requires antisymmetric matrix elements" 
         super().__init__(basis, **kwargs)
-
+        self.f = basis.h + np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_])
 
     def next_iteration(self, t):
         f = self.f
@@ -57,22 +57,88 @@ class CCD(CCbase):
     def check_MP2_first_iter(self, iters, p, E_CCD0, v, occ, vir, epsinv):
         if iters == 0 and p == 0:
             E_mp2 = 0.25 * np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, epsinv)
-            assert np.isclose(E_CCD0, E_mp2), f"First iteration of CCD did not reproduce MP2 energy, {E_ccd0 = }, {E_mp2 =}"
+            assert np.isclose(E_CCD0, E_mp2), f"First iteration of CCD did not reproduce MP2 energy, {E_CCD0 = }, {E_mp2 =}"
 
+
+class RCCD(CCbase):
+    def __init__(self, basis, **kwargs):
+        assert basis.spinrestricted_, f"Restricted CCD requires restricted matrix elements"
+        assert not basis.is_AS_, f"Restricted CCD can not use antisymmetric matrix elements" 
+        super().__init__(basis, **kwargs)
+        D = np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_])
+        E = np.einsum("piiq->pq", basis.v[:, basis.occ_, basis.occ_, :])
+        self.f = basis.h + 2*D - E
+        
+    def evalute_energy_iteration(self, t, v, occ, vir):
+        D = np.einsum("ijab,abij", v[occ, occ, vir, vir], t)
+        E = np.einsum("ijba,abij", v[occ, occ, vir, vir], t)
+        return 2*D - E
+
+    def next_iteration(self, t):
+        f = self.f
+        v = self.basis.v_
+
+        occ, vir = self.basis.occ_, self.basis.vir_
+
+        res = np.zeros_like(t)
+        # Here we have a long permutation term, so we collect all sums and then perform the permutation
+
+        # Fock terms, single sum
+        # res += np.einsum("bc,acij->abij", f[vir,vir], t)
+        # res += np.einsum("kj,abik->abij", f[occ,occ], t)
+
+        # virvir and occocc sums
+        res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t)
+        res += 0.5*np.einsum("klij,abkl->abij", v[occ, occ, occ, occ], t)
+
+        # vir occ double sum
+        res += 2*np.einsum("kbcj,acik->abij", v[occ, vir, vir, occ], t)
+        res -= np.einsum("kbcj,acki->abij", v[occ, vir, vir, occ], t)
+        res -= np.einsum("kbic,ackj->abij", v[occ, vir, occ, vir], t)
+        res -= np.einsum("kbjc,acik->abij", v[occ, vir, occ, vir], t)
+        
+        # vvoo sums
+        res += 0.5*np.einsum("klcd,cdij,abkl->abij", v[occ, occ, vir, vir], t, t)
+        res += 2*np.einsum("klcd,acik,dblj->abij", v[occ, occ, vir, vir], t, t)
+        res -= 2*np.einsum("klcd,acik,dbjl->abij", v[occ, occ, vir, vir], t, t)
+        res += 0.5*np.einsum("klcd,caik,bdlj->abij", v[occ, occ, vir, vir], t, t)
+        res -= np.einsum("klcd,adik,cblj->abij", v[occ, occ, vir, vir], t, t)
+        res += np.einsum("klcd,adki,cblj->abij", v[occ, occ, vir, vir], t, t)
+        
+        res += 0.5*np.einsum("klcd,cbil,adkj->abij", v[occ, occ, vir, vir], t, t)
+        res -= 2*np.einsum("klcd,cdki,ablj->abij", v[occ, occ, vir, vir], t, t)
+        res += np.einsum("klcd,cdik,ablj->abij", v[occ, occ, vir, vir], t, t)
+        res -= 2*np.einsum("klcd,cakl,dbij->abij", v[occ, occ, vir, vir], t, t)
+        res += np.einsum("klcd,ackl,dbij->abij", v[occ, occ, vir, vir], t, t)
+        
+        res = res + res.transpose(1,0,3,2)
+        # DONE WITH PERM TERM
+        
+        res += v[vir, vir, occ, occ] # v_abij
+    
+        return res
+    
+    def check_MP2_first_iter(self, iters, p, E_CCD0, v, occ, vir, epsinv):
+        if iters == 0 and p == 0:
+            D = np.einsum("ijab,abij,abij", v[occ,occ,vir,vir], v[vir,vir,occ,occ], epsinv)
+            E = np.einsum("ijba,abij,abij", v[occ,occ,vir,vir], v[vir,vir,occ,occ], epsinv)
+            E_mp2 = 2*D-E
+            assert np.isclose(E_CCD0, E_mp2), f"First iteration of CCD did not reproduce MP2 energy, {E_CCD0 = }, {E_mp2 =}"
 
 if __name__ == '__main__':
-    from ..basis.Hydrogen import Hydrogen
-    from ..HF.HF import HF
+    from ..basis.HarmonicsOscillator import HarmonicsOscillator
+    from ..HF.HF import HF, RHF
     N = 2
-    basis = Hydrogen(L=6, N=N, Z=N, spinrestricted=False).load_TB("hydrogen.txt")
+    basis = HarmonicsOscillator(L=72, N=N, Z=N, spinrestricted=True)
     basis.calculate_OB()
+    basis.calculate_TB()
     
-    hf = HF(basis)
+    hf = RHF(basis)
     hf.run()
     Eref = hf.evaluate_energy()
     basis = hf.perform_basis_change(basis)
 
-    ccd = CCD(basis)
+    ccd = RCCD(basis)
     ccd.run()
 
     dE_ccd = ccd.deltaE

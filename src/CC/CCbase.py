@@ -12,8 +12,7 @@ class CCbase(ABC):
         self.converged = False
 
         self.deltaE = None
-        self.f = basis.h + np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_])
-    
+
     def run(self, tol=1e-5, maxiters=100, p=0, vocal=False):
         basis = self.basis
         v = basis.v_
@@ -112,6 +111,7 @@ class CCbase(ABC):
                 Currently using:
                     L = {self.basis.L_} basis functions
                     N = {self.basis.N_} occupied functions
+                    Spinrestricted? {self.basis.spinrestricted_}
                 -------------------------------------------
             """)
         return textwrap.dedent(f"""
@@ -125,5 +125,6 @@ class CCbase(ABC):
             Used:
                 L = {self.basis.L_} basis functions
                 N = {self.basis.N_} occupied functions
+                Spinrestricted? {self.basis.spinrestricted_}
             -----------------------------------------
         """)
