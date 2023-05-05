@@ -9,7 +9,7 @@
 namespace py = pybind11;
 
 
-py::array_t<double> wrapper(py::array_t<double> array_old, py::array_t<double> array_new) {
+py::array_t<double> make_AS_wrapper(py::array_t<double> array_old, py::array_t<double> array_new) {
   // check input dimensions
   if ( array_old.ndim()     != 4 )
     throw std::runtime_error("Input should be 4-D NumPy array");
@@ -46,5 +46,5 @@ PYBIND11_MODULE(cpputils, m) {
   //           sum(data.data(), data.size());
   //           return data;
   //       });
-  m.def("make_AS", &wrapper, "sdasd");
+  m.def("make_AS", &make_AS_wrapper, "sdasd");
 }

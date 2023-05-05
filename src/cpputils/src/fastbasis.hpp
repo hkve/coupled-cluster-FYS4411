@@ -29,6 +29,4 @@ void make_AS(double* ptr_old, double* ptr_new, int L) {
     }
 }
 
-
-
 #endif

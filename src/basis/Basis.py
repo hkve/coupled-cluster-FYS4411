@@ -27,18 +27,6 @@ class Basis(ABC):
         self.occ_ = slice(0,N)
         self.vir_ = slice(N,L)
 
-        self.large_loops = {
-            "make_AS": self.make_AS_python,
-        }
-
-        default_args = {
-            "fast": False
-        }
-
-        default_args.update(kwargs)
-
-        if default_args["fast"]:
-            self.setup_fast_functions()
 
     @property
     def h(self):
@@ -59,53 +47,12 @@ class Basis(ABC):
     def find_folder(self):
         print(__file__)
 
-    def setup_fast_functions(self):
-        try:
-            import cpputils
-        except:
-            raise ImportError("cpputils is not installed!")
-
-        print("Going fast...")
-        self.large_loops = {
-            "make_AS": cpputils.make_AS
-        }
-    def make_AS_python(self, v, v_AS):
-        L = self.L_
-        for i in range(L):
-            for j in range(L):
-                for k in range(L):
-                    for l in range(L):
-                        elm = v[i,j,k,l] - v[i,j,l,k]
-                        v_AS[i,j,k,l] = elm
-                        v_AS[i,j,l,k] = -elm
-                        v_AS[j,i,k,l] = -elm
-                        v_AS[j,i,l,k] = elm
 
     def restricted_to_unrestricted(self):
-        L_new = 2*self.L_
-        h_new = np.zeros(shape=(L_new, L_new))
-
-        for i in range(self.L_):
-            for j in range(self.L_):
-                h_new[2*i,2*j] = self.h[i,j]
-                h_new[2*i+1,2*j+1] = self.h[i,j]
-
-        h_new2 = np.kron(self.h, np.eye(2))
-        np.testing.assert_allclose(h_new, h_new2)
-
-        v_new = np.zeros(shape=(L_new, L_new, L_new, L_new))
-        for i in range(self.L_):
-            for j in range(self.L_):
-                for k in range(self.L_):
-                    for l in range(self.L_):
-                        v_new[2*i, 2*j, 2*k, 2*l] = self.v[i,j,k,l]
-                        v_new[2*i+1, 2*j, 2*k+1, 2*l] = self.v[i,j,k,l]
-                        v_new[2*i, 2*j+1, 2*k, 2*l+1] = self.v[i,j,k,l]
-                        v_new[2*i+1, 2*j+1, 2*k+1, 2*l+1] = self.v[i,j,k,l]
+        h_new = np.kron(self.h, np.eye(2))
         
         extend = np.einsum("pr, qs -> pqrs", np.eye(2), np.eye(2))
-        v_new2 = np.kron(self.v, extend)
-        np.testing.assert_allclose(v_new, v_new2)
+        v_new = np.kron(self.v, extend)
         
         self.h_ = h_new
         self.v_ = v_new
@@ -126,8 +73,8 @@ class Basis(ABC):
         v_AS = np.zeros_like(self.v)
         v = self.v
 
-        self.large_loops["make_AS"](v, v_AS)
-
+        v_AS = v - v.transpose(0,1,3,2)
+        
         self.v_ = v_AS
         self.is_AS_ = True
         
