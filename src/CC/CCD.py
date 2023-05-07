@@ -65,13 +65,13 @@ class RCCD(CCbase):
         assert basis.spinrestricted_, f"Restricted CCD requires restricted matrix elements"
         assert not basis.is_AS_, f"Restricted CCD can not use antisymmetric matrix elements" 
         super().__init__(basis, **kwargs)
-        D = np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_])
-        E = np.einsum("piiq->pq", basis.v[:, basis.occ_, basis.occ_, :])
+        D = np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_], optimize=True)
+        E = np.einsum("piiq->pq", basis.v[:, basis.occ_, basis.occ_, :], optimize=True)
         self.f = basis.h + 2*D - E
         
     def evalute_energy_iteration(self, t, v, occ, vir):
-        D = np.einsum("ijab,abij", v[occ, occ, vir, vir], t)
-        E = np.einsum("ijba,abij", v[occ, occ, vir, vir], t)
+        D = np.einsum("ijab,abij", v[occ, occ, vir, vir], t, optimize=True)
+        E = np.einsum("ijba,abij", v[occ, occ, vir, vir], t, optimize=True)
         return 2*D - E
 
     def next_iteration(self, t):
@@ -88,28 +88,28 @@ class RCCD(CCbase):
         # res += np.einsum("kj,abik->abij", f[occ,occ], t)
 
         # virvir and occocc sums
-        res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t)
-        res += 0.5*np.einsum("klij,abkl->abij", v[occ, occ, occ, occ], t)
+        res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t, optimize=True)
+        res += 0.5*np.einsum("klij,abkl->abij", v[occ, occ, occ, occ], t, optimize=True)
 
         # vir occ double sum
-        res += 2*np.einsum("kbcj,acik->abij", v[occ, vir, vir, occ], t)
-        res -= np.einsum("kbcj,acki->abij", v[occ, vir, vir, occ], t)
-        res -= np.einsum("kbic,ackj->abij", v[occ, vir, occ, vir], t)
-        res -= np.einsum("kbjc,acik->abij", v[occ, vir, occ, vir], t)
+        res += 2*np.einsum("kbcj,acik->abij", v[occ, vir, vir, occ], t, optimize=True)
+        res -= np.einsum("kbcj,acki->abij", v[occ, vir, vir, occ], t, optimize=True)
+        res -= np.einsum("kbic,ackj->abij", v[occ, vir, occ, vir], t, optimize=True)
+        res -= np.einsum("kbjc,acik->abij", v[occ, vir, occ, vir], t, optimize=True)
         
         # vvoo sums
-        res += 0.5*np.einsum("klcd,cdij,abkl->abij", v[occ, occ, vir, vir], t, t)
-        res += 2*np.einsum("klcd,acik,dblj->abij", v[occ, occ, vir, vir], t, t)
-        res -= 2*np.einsum("klcd,acik,dbjl->abij", v[occ, occ, vir, vir], t, t)
-        res += 0.5*np.einsum("klcd,caik,bdlj->abij", v[occ, occ, vir, vir], t, t)
-        res -= np.einsum("klcd,adik,cblj->abij", v[occ, occ, vir, vir], t, t)
-        res += np.einsum("klcd,adki,cblj->abij", v[occ, occ, vir, vir], t, t)
+        res += 0.5*np.einsum("klcd,cdij,abkl->abij", v[occ, occ, vir, vir], t, t, optimize=True)
+        res += 2*np.einsum("klcd,acik,dblj->abij", v[occ, occ, vir, vir], t, t, optimize=True)
+        res -= 2*np.einsum("klcd,acik,dbjl->abij", v[occ, occ, vir, vir], t, t, optimize=True)
+        res += 0.5*np.einsum("klcd,caik,bdlj->abij", v[occ, occ, vir, vir], t, t, optimize=True)
+        res -= np.einsum("klcd,adik,cblj->abij", v[occ, occ, vir, vir], t, t, optimize=True)
+        res += np.einsum("klcd,adki,cblj->abij", v[occ, occ, vir, vir], t, t, optimize=True)
         
-        res += 0.5*np.einsum("klcd,cbil,adkj->abij", v[occ, occ, vir, vir], t, t)
-        res -= 2*np.einsum("klcd,cdki,ablj->abij", v[occ, occ, vir, vir], t, t)
-        res += np.einsum("klcd,cdik,ablj->abij", v[occ, occ, vir, vir], t, t)
-        res -= 2*np.einsum("klcd,cakl,dbij->abij", v[occ, occ, vir, vir], t, t)
-        res += np.einsum("klcd,ackl,dbij->abij", v[occ, occ, vir, vir], t, t)
+        res += 0.5*np.einsum("klcd,cbil,adkj->abij", v[occ, occ, vir, vir], t, t, optimize=True)
+        res -= 2*np.einsum("klcd,cdki,ablj->abij", v[occ, occ, vir, vir], t, t, optimize=True)
+        res += np.einsum("klcd,cdik,ablj->abij", v[occ, occ, vir, vir], t, t, optimize=True)
+        res -= 2*np.einsum("klcd,cakl,dbij->abij", v[occ, occ, vir, vir], t, t, optimize=True)
+        res += np.einsum("klcd,ackl,dbij->abij", v[occ, occ, vir, vir], t, t, optimize=True)
         
         res = res + res.transpose(1,0,3,2)
         # DONE WITH PERM TERM
@@ -129,16 +129,16 @@ if __name__ == '__main__':
     from ..basis.HarmonicsOscillator import HarmonicsOscillator
     from ..HF.HF import HF, RHF
     N = 2
-    basis = HarmonicsOscillator(L=72, N=N, Z=N, spinrestricted=True)
+    basis = HarmonicsOscillator(L=72, N=N, Z=N, spinrestricted=False)
     basis.calculate_OB()
     basis.calculate_TB()
     
-    hf = RHF(basis)
+    hf = HF(basis)
     hf.run()
     Eref = hf.evaluate_energy()
     basis = hf.perform_basis_change(basis)
 
-    ccd = RCCD(basis)
+    ccd = CCD(basis)
     ccd.run()
 
     dE_ccd = ccd.deltaE
