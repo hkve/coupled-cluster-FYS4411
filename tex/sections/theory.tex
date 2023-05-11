@@ -25,7 +25,7 @@ The simplest ground state ansatz
 \begin{align*}
     \ketansatz = \crt{i}\crt{j}\ldots \ket{0},
 \end{align*}
-can be evaluated to calculate the simplest energy guess
+can be evaluated to calculate the simplest energy estimate using \text{Wicks Theorem} \citep{molinariNotesWickTheorem2017} 
 \begin{align}
     \braansatz \ham \ketansatz = \sum_{i} \hshort{i}{i} + \frac{1}{2}\sum_{ij} \elmASshort{ij}{ij} \equiv \Eref, \label[eq]{eq:theo:e0ref}
 \end{align}
@@ -35,20 +35,32 @@ named the \textit{reference energy}. Commonly wicks theorem is applied to \cref{
 \end{align*}
 where $\fockno$ and $\interno$ is the normal ordered \textit{Fock operator} and two body interaction respectively.
 \begin{align}
-    \fockno &= \sum_{pq} \fshort{p}{q} \set{\crt{p} \ani{q}}, \\
-    \interno &= \frac{1}{4}\sum_{pqrs} \elmASshort{pq}{rs} \set{\crt{p}\crt{q}\ani{s}\ani{r}}
+    \fockno &= \sum_{pq} \fshort{p}{q} \set{\crt{p} \ani{q}}, \label[eq]{eq:theo:fock_no} \\
+    \interno &= \frac{1}{4}\sum_{pqrs} \elmASshort{pq}{rs} \set{\crt{p}\crt{q}\ani{s}\ani{r}} \label[eq]{eq:theo:interaction_no}
 \end{align}
-The Fock operator matrix elements $\fshort{p}{q}$ are given as 
+The operators inside the curly brackets denotes \textit{normal ordering}. In constructing the Fock operator, the matrix elements $\fshort{p}{q}$ are given as 
 \begin{align*}
     \fshort{p}{q} = \hshort{p}{q} + \sum_i \elmASshort{pi}{qi}
 \end{align*}
-normal order, Hamiltonian, normal order Hamiltonian, 
+One major reason for doing this is the applicability of the \textit{Generalized Wicks Theorem}, such that we only need to consider contractions between different normal ordered strings \citep{ferialdiGeneralWickTheorem2021}.
 
 \begin{align}
     \hat{H}\ket{\Psi} = E \ket{\Psi} \label[eq]{eq:theo:schroding_equation}
 \end{align}
 
 \subsection{Hartree-Fock}
+The Hartree-Fock method is one of the cheapest and most commonly applicated many-body methods. Using the reference energy equation \cref{eq:theo:e0ref}, we perform a basis change to the Hartree-Fock basis, based on minimizing the ansatz expectation value. Using Greek letters to index the computational basis $\alpha, \beta \ldots$, going over all states $L$ we can change to the Hartree-Fock basis using
+
+\begin{align*}
+    \ket{p} = \sum_{\alpha} C_{\alpha p}\ket{\alpha}
+\end{align*}
+where $C_{\alpha p}$ are the basis coefficients. Assuming the 
+
+We are however not free to choose an arbitrary transformation, since we re 
+
+\begin{align}
+    \mathcal{L} = \braansatz \ham \ketansatz + \sum_i \epsilon_{i\alpha} (\delta_{ij} - \ip{i}{j})
+\end{align}
 
 \subsection{Coupled Cluster}
 The exact solution $\ket{\Psi}$ is approximated by an exponential ansatz $\ketCC$ 
@@ -97,6 +109,11 @@ named the \textit{energy equation}. Considering excited states, we arrive at the
 \end{align}
 used for finding the unknown amplitudes $\amplitude{ab}{ij}$. To find explicit expressions for \cref{eq:theo:energy_equation_sim_transformed} and \cref{eq:theo:amplitude_equations}, we expand $\simham$ using the Hausdorff expansion
 \begin{align*}
-    \simham &= \hamno + \commutator{\hamno}{\cluster{2}} + \frac{1}{2!}\commutator{\commutator{\hamno}{\cluster{2}}}{\cluster{2}} + \ldots %&+ \frac{1}{4!}\commutator{\commutator{\commutator{\hamno}{\cluster{2}}}{\cluster{2}}}{\cluster{2}}
+    \simham &= \hamno + \commutator{\hamno}{\cluster{2}} + \frac{1}{2!}\commutator{\commutator{\hamno}{\cluster{2}}}{\cluster{2}}.
 \end{align*}
-fhjksd
+The truncation at the two-fold commutator comes from the fact that we have a two-body interaction. When evaluated with a doubly excited state, at least one creation or annihilation operator from each of the cluster operators has to be contracted with $\hamno$. Therefor having eight creation and annihilation operators in two $\cluster{2}$, four of them can be contracted with the four from $\hamno$, while the other four with the operators from $\braexed{ab}{ij}$. This gives the CCD amplitude equation calculated from 
+
+\begin{align}
+    \braexed{ab}{ij}\simham\ketansatz = 0 \label[eq]{eq:theo:amplitude_equation_CCD}
+\end{align}
+To make practical use of \cref{eq:theo:energy_equation_sim_transformed} and \cref{eq:theo:amplitude_equation_CCD}
