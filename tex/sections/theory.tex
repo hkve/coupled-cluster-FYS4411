@@ -1,16 +1,35 @@
 \subsection{Mathematical framework and notation}
-Define shortly
-\begin{align}
-    N, L, R
-\end{align}
-creation and annihilation, anitcommutators, normal order, Hamiltonian, normal order Hamiltonian, 
+In the following we will use the occupation representation, making use of creation $\crta{p}$ and annihilation $\ania{p}$ operators. As a shorthand, we will write $\crt{p} \equiv \crta{p}$ and $\ani{p} \equiv \ania{p}$ when no confusion can be made. $N$ represents the number of occupied states while $L$ the total number of states in our calculations. The indicies $p,q,\ldots$ are reserved for the $L$ general states, the $N$ occupied states are indexed by $i,j,\ldots$, while the $L-N$ unoccupied (virtual) states by $a,b,\ldots$ indicies.
+
+Since we are treating fermionic systems, the canonical anticommutation relations are used
+
+\begin{align*}
+    \set{\crt{p},\crt{q}} = \set{\ani{p},\ani{q}} = 0 \hspace{20px} \set{\crt{p},\ani{q}} = \delta_{pq}.
+\end{align*}
+One and two body matrix elements are calculated using a computational basis, with explicit expressions for one body Hamiltonians $h(\vec{x})$ and two body interaction $v(\vec{x}, \vec{x}')$ here presented in position space
+
+\begin{align*}
+    \bra{p}\hat{h}\ket{q} &= \int \dd{\vec{x}} \psi_p^*(x) \hat{h}(\vec{x}) \psi_q(x) \\
+    \elm{pq}{rs} &= \int \dd{\vec{x}}\dd{\vec{x}'} \psi_p^*(\vec{x})\psi_q^*(\vec{x}') \hat{v}(\vec{x},\vec{x}') \psi_r(\vec{x})\psi_s(\vec{x}')
+\end{align*}
+with $\psi_p$ being a single particle wave function, often chosen to be the eigenfunction of $\hat{h}$. Note that $p$ also contain the spin quantum number, meaning that $\dd \vec{x}$ implicitly contains a spin component. If $\hat{h}$ or $\hat{v}$ is spin \textit{independent}, this simply reduces to Kronecker deltas for the spin component. It is often convenient to use antisymmetrized matrix elements, defined as 
+\begin{align*}
+    \elmAS{pq}{rs} = \elm{pq}{rs} - \elm{pq}{sr}
+\end{align*}
+The shorthands $\hshort{p}{q} \equiv \bra{p} \hat{h} \ket{q}$, $\elmshort{pq}{rs} \equiv \elm{pq}{rs}$ and $\elmASshort{pq}{rs} \equiv \elmAS{pq}{rs}$ will often be used. Using this formulation, a general two-body operator can be constructed
+
+\begin{align*}
+    \ham = \sum_{pq} \hshort{p}{q}\crt{p}\ani{q} + \frac{1}{4} \sum_{pqrs} \elmASshort{pq}{rs}\crt{p}\crt{q}\ani{s}\ani{r}
+\end{align*}
+
+normal order, Hamiltonian, normal order Hamiltonian, 
 
 \begin{align}
     \hat{H}\ket{\Psi} = E \ket{\Psi} \label[eq]{eq:theo:schroding_equation}
 \end{align}
 
 \subsection{Hartree-Fock}
-a
+
 \subsection{Coupled Cluster}
 The exact solution $\ket{\Psi}$ is approximated by an exponential ansatz $\ketCC$ 
 \begin{align}
@@ -40,11 +59,24 @@ with the four-fold amplitude permutation symmetry \footnote{For double amplitude
 Incorporating the CCD approximation in the Schr\"odinger equation (\cref{eq:theo:schroding_equation}), we see that
 \begin{align}
     \ham \exp{\cluster{2}} \ketansatz &= E \exp{\cluster{2}} \nonumber \ketansatz,  \\
-    \hamno \exp{\cluster{2}} \ketansatz &= \ECCD \exp{\cluster{2}} \ketansatz, \label[eq]{eq:theo:schroding_equation_CCD}
+    \hamno \exp{\cluster{2}} \ketansatz &= \DECCD \exp{\cluster{2}} \ketansatz, \label[eq]{eq:theo:schroding_equation_CCD}
 \end{align}
-where $\ECCD = E-\Eref$. Expanding both sides and taking the inner product with $\braansatz$, we in principle get an equation for the energy. However, this approach is not amenable to practical computer implementation \citep{bartlettCoupledClusterMethodsMolecular1984} since the amplitude equation will be coupled with the energy equation. Therefor, we rather apply a similarity transform to \cref{eq:theo:schroding_equation_CCD} by multiplying by the inverse of $\exp{\cluster{2}}$,
+where $\DECCD = E-\Eref$. Expanding both sides and taking the inner product with $\braansatz$, we in principle get an equation for the energy. However, this approach is not amenable to practical computer implementation \citep{bartlettCoupledClusterMethodsMolecular1984} since the amplitude equation will be coupled with the energy equation. Therefor, we rather apply a similarity transform to \cref{eq:theo:schroding_equation_CCD} by multiplying by the inverse of $\exp{\cluster{2}}$,
 \begin{align}
-    \exp{-\cluster{2}} \hamno \exp{-\cluster{2}} \ketansatz &= \ECCD \ketansatz \nonumber \\
-    \braansatz \simham \ketansatz &= \ECCD \label[eq]{eq:theo:energy_equation_sim_transformed}
+    \exp{-\cluster{2}} \hamno \exp{-\cluster{2}} \ketansatz &= \DECCD \ketansatz \nonumber \\
+    \simham \ketansatz &= \DECCD \ketansatz \label[eq]{eq:theo:ccd_eigenvalueproblem}
 \end{align}
-where $\simham = \exp{-\cluster{2}} \hamno \exp{-\cluster{2}}$. \comment{Ask oyvind about $\braexed{ab}{ij}$ equation}
+where $\simham = \exp{-\cluster{2}} \hamno \exp{-\cluster{2}}$ is the similarity transformed Hamiltonian. Using this reformulated eigenvalue problem, we can perform the inner product with different states to calculate both $\DECCD$ and $\amplitude{ab}{ij}$. Considering $\braansatz$ we get
+
+\begin{align}
+    \braansatz \simham \ketansatz = \DECCD, \label[eq]{eq:theo:energy_equation_sim_transformed}
+\end{align}
+named the \textit{energy equation}. Considering excited states, we arrive at the \textit{amplitude equations}
+\begin{align}
+    \braexed{ab\ldots}{ij\ldots} \simham \ketansatz \label[eq]{eq:theo:amplitude_equations},
+\end{align}
+used for finding the unknown amplitudes $\amplitude{ab}{ij}$. To find explicit expressions for \cref{eq:theo:energy_equation_sim_transformed} and \cref{eq:theo:amplitude_equations}, we expand $\simham$ using the Hausdorff expansion
+\begin{align*}
+    \simham &= \hamno + \commutator{\hamno}{\cluster{2}} + \frac{1}{2!}\commutator{\commutator{\hamno}{\cluster{2}}}{\cluster{2}} + \ldots %&+ \frac{1}{4!}\commutator{\commutator{\commutator{\hamno}{\cluster{2}}}{\cluster{2}}}{\cluster{2}}
+\end{align*}
+fhjksd
