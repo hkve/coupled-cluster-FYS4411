@@ -506,3 +506,4 @@ pyrightconfig.json
 sandkasse/
 .vscode/ltex.dictionary.en-US.txt
 src/.vscode
+tex/.vscode

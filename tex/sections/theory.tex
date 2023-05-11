@@ -62,6 +62,19 @@ We are however not free to choose an arbitrary transformation, since we re
     \mathcal{L} = \braansatz \ham \ketansatz + \sum_i \epsilon_{i\alpha} (\delta_{ij} - \ip{i}{j})
 \end{align}
 
+\begin{align*}
+    \delta \mathcal{L} = 0
+\end{align*}
+
+Performing this minimization, we achieve an eigenvalue problem with the matrix
+\begin{align}
+    \hamhf{\alpha\beta} = \hshort{\alpha}{\beta} + \sum_{\gamma\delta} \rho_{\gamma\delta} \elmASshort{\alpha\gamma}{\beta \delta}, \hspace{20px} \rho_{\gamma\delta} = \sum_i C^*_{\gamma i} C_{\delta i} 
+\end{align}
+having the coefficients as eigenvectors and the Lagrange multipliers as eigenvalues
+\begin{align}
+    \sum_{\beta} \hamhf{\alpha \beta} C_{i \beta} = \epsilon_i C_{i \alpha}.
+\end{align}
+\comment{method?} This is solved iteratively, starting with $C_{ii} = 1$ \footnote{Note that this is over occupied states}, repeatedly diagonalizing $C$. As a stopping criteria, the sum of Lagrange multipliers per occupied states between iterations is used. 
 \subsection{Coupled Cluster}
 The exact solution $\ket{\Psi}$ is approximated by an exponential ansatz $\ketCC$ 
 \begin{align}
@@ -117,3 +130,10 @@ The truncation at the two-fold commutator comes from the fact that we have a two
     \braexed{ab}{ij}\simham\ketansatz = 0 \label[eq]{eq:theo:amplitude_equation_CCD}
 \end{align}
 To make practical use of \cref{eq:theo:energy_equation_sim_transformed} and \cref{eq:theo:amplitude_equation_CCD}
+
+\subsection{Spin restriction}
+Both the HF and CCD frameworks presented here treats matrix elements including spin. If the Hamiltonian is spin-independent, both storing and summation over matrix elements can be significantly reduced. Separating relevant quantum numbers and spin, explicitly $p = (P,\sigma_P)$ with $P$ as relevant numbers and $\sigma_P$ as spin, we see that a general matrix element
+\begin{align*}
+    \elm{pq}{rs} = \elm{PQ}{RS} \delta_{\sigma_P \sigma_R} \delta_{\sigma_Q \sigma_S},
+\end{align*}
+only gives non-zero contributions when both the spins of $p,r$ and $q,s$ align. This reduces 16 equal (or vanishing) elements to a single element, improving both storage and computation time.
