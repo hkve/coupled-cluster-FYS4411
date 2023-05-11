@@ -18,10 +18,30 @@ with $\psi_p$ being a single particle wave function, often chosen to be the eige
 \end{align*}
 The shorthands $\hshort{p}{q} \equiv \bra{p} \hat{h} \ket{q}$, $\elmshort{pq}{rs} \equiv \elm{pq}{rs}$ and $\elmASshort{pq}{rs} \equiv \elmAS{pq}{rs}$ will often be used. Using this formulation, a general two-body operator can be constructed
 
+\begin{align}
+    \ham = \sum_{pq} \hshort{p}{q}\crt{p}\ani{q} + \frac{1}{4} \sum_{pqrs} \elmASshort{pq}{rs}\crt{p}\crt{q}\ani{s}\ani{r} \label[eq]{eq:theo:second_quant_ham}
+\end{align}
+The simplest ground state ansatz
 \begin{align*}
-    \ham = \sum_{pq} \hshort{p}{q}\crt{p}\ani{q} + \frac{1}{4} \sum_{pqrs} \elmASshort{pq}{rs}\crt{p}\crt{q}\ani{s}\ani{r}
+    \ketansatz = \crt{i}\crt{j}\ldots \ket{0},
 \end{align*}
-
+can be evaluated to calculate the simplest energy guess
+\begin{align}
+    \braansatz \ham \ketansatz = \sum_{i} \hshort{i}{i} + \frac{1}{2}\sum_{ij} \elmASshort{ij}{ij} \equiv \Eref, \label[eq]{eq:theo:e0ref}
+\end{align}
+named the \textit{reference energy}. Commonly wicks theorem is applied to \cref{eq:theo:second_quant_ham} to pick out the \cref{eq:theo:e0ref} contribution, defining the \textit{normal ordered} Hamiltonian
+\begin{align*}
+    \ham &= \hamno + \Eref = \fockno + \interno + \Eref
+\end{align*}
+where $\fockno$ and $\interno$ is the normal ordered \textit{Fock operator} and two body interaction respectively.
+\begin{align}
+    \fockno &= \sum_{pq} \fshort{p}{q} \set{\crt{p} \ani{q}}, \\
+    \interno &= \frac{1}{4}\sum_{pqrs} \elmASshort{pq}{rs} \set{\crt{p}\crt{q}\ani{s}\ani{r}}
+\end{align}
+The Fock operator matrix elements $\fshort{p}{q}$ are given as 
+\begin{align*}
+    \fshort{p}{q} = \hshort{p}{q} + \sum_i \elmASshort{pi}{qi}
+\end{align*}
 normal order, Hamiltonian, normal order Hamiltonian, 
 
 \begin{align}
