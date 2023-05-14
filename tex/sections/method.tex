@@ -1,3 +1,25 @@
+\subsection{Quantum Mechanical System}
+
+\subsubsection{Helium and Beryllium}
+The initial testing during development of the CCD and RCCD implementations was performed using Hydrogen wave functions. As a choice of basis sets, these functions are `physically motivated` in the sense of being solutions to the one body electron case. The well-know relevant quantum numbers determining the form of the spatial wave functions are $n$ as the principal quantum number, with $l$ and $m$ as orbital angular momentum and projection respectively. Due to the spherically symmetric potential, the wave function $\psi_{nlm}$ can be separated in a radial function $R_{nl}(r)$ and a spherical harmonic $\sphericalharmonic{m}{l}$,  
+
+\begin{align}
+    \psi_{nlm}(r,\theta,\phi) = R_{nl}(r) \sphericalharmonic{m}{l}(\theta, \phi). \label[eq]{eq:met:hydrogen_wf_definition}
+\end{align}
+The radial part $R_{nl}(r)$ has the form
+
+\begin{align*}
+    R_{nl}(r) &= A_{nl} e^{-r/na_0} \pclosed{\frac{2r}{na_0}}^l \bclosed{\associatedlaguerre{2l+1}{n-l-1}(2r/na_0)} \\
+    A_{nl} &= \sqrt{ \pclosed{\frac{2}{na_0}}^3 \frac{(n-l-1)!}{2n(n+l)!} }
+\end{align*}
+With $L$ as the associated Laguerre polynomials and $a_0$ the Bohr radius. For $l > 0$ the Coulomb interaction integral of \cref{eq:met:hydrogen_wf_definition} can not be easily evaluated due to $\sphericalharmonic{m}{l}$ having a non-trivial $\theta$ and $\phi$ dependence. Therefor for simplicity we only consider $s$ orbital ($l=0$ states), when calculating $\elm{pq}{rs}$. This is briefly sketched in \cref{sec:app:hydrogen_coulomb_integrals}. The one-body term $\hshort{p}{q}$ are diagonal with 
+
+\begin{align}
+    h_{nm} = -\frac{Z}{2n^2}\delta_{nm} 
+\end{align}
+
+\subsubsection{Two-Dimensional Harmonic Oscillator}
+\subsubsection{Doubly Magic Nuclei}
 Define
 \begin{align}
     R
