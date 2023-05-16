@@ -1,1 +1,13 @@
 \section{Hydrogen Coulomb integrals}\label[sec]{sec:app:hydrogen_coulomb_integrals}
+Considering states without orbital angular momentum, we remove the dependence on the two quantum numbers $l$ and $m$, giving
+
+\begin{align*}
+    &\psi_{nlm}(r,\theta,\phi) \longrightarrow \psi_n (r,\theta, \phi) \\
+    &= \sqrt{\pclosed{\frac{4}{n^5}} } e^{-r/n} \associatedlaguerre{1}{n-1}(2r/n) \sphericalharmonic{0}{0}.
+\end{align*}
+Where we work in distances of the Bohr radius $r/a_0 \longrightarrow r$. Since the Coulomb integral is over two $\vec{r}_1, \vec{r}_2 \in \mathbb{R}^3$ spaces, we align $\vec{r}_1$ along the $y$-axis and perform the $\vec{r}_2$ integral first. In spherical coordinates, the Coulomb interaction then becomes 
+
+\begin{align}
+    \hat{v}(\vec{r}_1, \vec{r}_2) = \frac{Z}{|\vec{r}_1 - \vec{r}_2|} = \frac{Z}{\sqrt{r_1^2 + r_2 ^2 - 2r_1 r_2 \cos \theta_2 }} \label[eq]{eq:app:coulomb_interaction}
+\end{align}
+With these preparations, the integrals can be solved for all $p,q,r,s$ combinations. The integrals were solved using \verb|SymPy| \citep{10.7717/peerj-cs.103}
