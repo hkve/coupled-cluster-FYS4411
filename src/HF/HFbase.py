@@ -68,12 +68,15 @@ class HFbase(ABC):
         return self.evaluate_energy_scheme()
     
     
-    def perform_basis_change(self, basis):
+    def perform_basis_change(self, basis, keep_coefs=False):
         if not self.has_run:
             raise RuntimeError("No Hartree-Fock calculation has been run. Perform .run() first.")
         if not self.converged:
             raise RuntimeWarning("Hartree-Fock calculation has not converged")
         
+        if keep_coefs:
+            basis.C = self.C_
+            
         h_prime = np.einsum("ai,bj,ab->ij", self.C_, self.C_, basis.h, optimize=True)
         v_prime = np.einsum("ai,bj,gk,dl,abgd->ijkl", self.C_, self.C_, self.C_, self.C_, basis.v, optimize=True)
         
@@ -81,4 +84,5 @@ class HFbase(ABC):
         basis.v_ = v_prime
 
         basis.h_ = h_prime #+ np.einsum("piqi", basis.v[:,occ,:,occ])
+
         return basis
