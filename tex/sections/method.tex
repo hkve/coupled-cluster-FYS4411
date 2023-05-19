@@ -17,9 +17,16 @@ With $L$ as the associated Laguerre polynomials and $a_0$ the Bohr radius. For $
 \begin{align}
     h_{nm} = -\frac{Z}{2n^2}\delta_{nm}
 \end{align}
-We will be interested in calculating the ground state energy for Helium and Beryllium, with two and four electrons respectively. In addition to Hartree-Fock and CCD calculations, a comparison to configuration interaction using singles (CIS) will be performed for both Helium and Beryllium. The results will also be benchmarked against the famouse work done by Egil A. Hylleraas \citep{hylleraasNumerischeBerechnung2STerme1930}.
+We will be interested in calculating the ground state energy for Helium and Beryllium, with two and four electrons respectively. In addition to Hartree-Fock and CCD calculations, a comparison to configuration interaction using singles (CIS) will be performed for both Helium and Beryllium. The results will also be benchmarked against the famous work done by Egil A. Hylleraas \citep{hylleraasNumerischeBerechnung2STerme1930}.
 
 \subsubsection{Two-Dimensional Harmonic Oscillator}
+To test the HF and CCD implementations on larger basis sets, the two-dimensional harmonic oscillator was chosen. $N$ electrons are confined in a potential characterized by the oscillation frequency $\omega$, with a repulsive Coulomb term
+
+\begin{align}
+    H = \sum_{i=1}^N \pclosed{-\frac{1}{2}\nabla_i^2 + \frac{1}{2}\omega^2 r_i^2} + \sum_{i < j} \frac{1}{r_{ij}} 
+\end{align}
+where $r_{ij} = |\vec{r}_i - \vec{r}_j|$. The natural single particle basis for this problem is the solutions to the non-interactive harmonic oscillator case. Characterized by two quantum   
+
 \subsubsection{Doubly Magic Nuclei}
 Define
 \begin{align}

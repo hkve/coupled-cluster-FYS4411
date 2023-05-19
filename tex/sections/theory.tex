@@ -52,21 +52,26 @@ One major reason for doing this is the applicability of the \textit{Generalized 
 The Hartree-Fock method is one of the cheapest and most commonly applicated many-body methods. Using the reference energy equation \cref{eq:theo:e0ref}, we perform a basis change to the Hartree-Fock basis, based on minimizing the ansatz expectation value. Using Greek letters to index the computational basis $\alpha, \beta \ldots$, going over all states $L$ we can change to the Hartree-Fock basis using
 
 \begin{align*}
-    \ket{p} = \sum_{\alpha} C_{\alpha p}\ket{\alpha}
+    \ket{i} = \sum_{\alpha} C_{\alpha i}\ket{\alpha}
 \end{align*}
-where $C_{\alpha p}$ are the basis coefficients. Assuming the 
-
-We are however not free to choose an arbitrary transformation, since we re 
-
-\begin{align}
-    \mathcal{L} = \braansatz \ham \ketansatz + \sum_i \epsilon_{i\alpha} (\delta_{ij} - \ip{i}{j})
-\end{align}
+where $C_{\alpha i}$ are the basis coefficients. These are the objects used for the parameter search in configuration space. We are however not free to choose an arbitrary transformation, since we require the Hartree-Fock states to be orthogonal $\braket{i}{j} = \delta_{ij}$. We formulate this constraint as a function of the coefficients $C$ 
 
 \begin{align*}
-    \delta \mathcal{L} = 0
+    \mathcal{G}(C) &= \sum_{ij} \epsilon_{ij} (\delta_{ij} - \ip{i}{j}) \\
+                    &= \sum_{ij}\sum_{\alpha\beta} \epsilon_{ij} (\delta_{ij} - C^*_{\alpha i} C_{\beta j} \ip{\alpha}{\beta}) = 0
 \end{align*}
+Where $\epsilon_{ij}$ as the Lagrange multipliers. The goal is minimizing 
 
-Performing this minimization, we achieve an eigenvalue problem with the matrix
+\begin{align*}
+    \mathcal{E}(C) &= \braansatz \ham \ketansatz = \sum_{i} \sum_{\alpha\beta} C_{\alpha i}^* C_{\beta i} \hshort{\alpha}{\beta} \\
+    &+ \frac{1}{2}\sum_{ij}\sum_{\alpha\beta\gamma\delta} C_{\alpha i}^* C_{\beta j}^* C_{\gamma i} C_{\delta j} \elmASshort{\alpha \beta}{\gamma \delta}
+\end{align*}
+and thus the relevant Lagrangian then becomes
+
+\begin{align*}
+    \mathcal{L}(C) = \mathcal{E}(C) + \mathcal{G}(C).
+\end{align*}
+The equation to solve are then found by considering a stationary point of the Lagrangian $\delta \mathcal{L} = 0$ wrt. the coefficients $C$. Performing this minimization, we achieve an eigenvalue problem with the matrix
 \begin{align}
     \hamhf{\alpha\beta} = \hshort{\alpha}{\beta} + \sum_{\gamma\delta} \rho_{\gamma\delta} \elmASshort{\alpha\gamma}{\beta \delta}, \hspace{20px} \rho_{\gamma\delta} = \sum_i C^*_{\gamma i} C_{\delta i} 
 \end{align}
@@ -74,6 +79,9 @@ having the coefficients as eigenvectors and the Lagrange multipliers as eigenval
 \begin{align}
     \sum_{\beta} \hamhf{\alpha \beta} C_{i \beta} = \epsilon_i C_{i \alpha}.
 \end{align}
+Where the Lagrange multipliers are diagonal since by their Hermiticity we can perform a unitary transformation to a basis where they are diagonal $\epsilon = U \epsilon' U^\dagger$.
+
+
 \comment{method?} This is solved iteratively, starting with $C_{ii} = 1$ \footnote{Note that this is over occupied states}, repeatedly diagonalizing $C$. As a stopping criteria, the sum of Lagrange multipliers per occupied states between iterations is used. 
 \subsection{Coupled Cluster}
 The exact solution $\ket{\Psi}$ is approximated by an exponential ansatz $\ketCC$ 
