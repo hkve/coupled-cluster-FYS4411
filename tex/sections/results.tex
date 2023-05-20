@@ -1,0 +1,44 @@
+\subsection{Helium and Beryllium}
+The closed shell Helium and Beryllium calculations are presented in \cref{tab:res:helium_and_beryllium}, with relative errors compared to FCI in \cref{tab:res:helium_and_beryllium_percent_error}. For both HF add CCD in both restricted and unrestricted schemes, no problems of convergence was encountered. Adding a mixing parameter $p > 0$ for CCD only resulted in slower convergence.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c|c|c}
+    Atom      &  $\Eref$ & CI & FCI & HF & RHF\\
+    \hline
+    He & -2.7500 & -2.8385 & -2.9037 & -2.8311 & -2.8311 \\
+    Be & -13.7160 & -14.3621 & -14.6674 & -14.5083 & -14.5083 \\
+    \end{tabular}
+    \newline
+    \vspace*{10px}
+    \newline
+    \begin{tabular}{c|c|c|c|c}
+        Atom & CCD & RCCD & CCD(HF) & RCCD(HF) \\
+        \hline
+        He & -2.7516 & -2.7516 & -2.8391 & -2.8391 \\
+        Be & -13.7195 & -13.7195 & -14.5129 & -14.5129
+    \end{tabular}
+    \caption{Ground state energies for Helium and Beryllium in \au\hspace{2px}Calculations done with configuration interaction with both singles and no constraints (full), in addition to HF and CCD in both restricted and unrestricted schemes. }\label[tab]{tab:res:helium_and_beryllium}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c|c}
+    Atom      &  $\Eref$ & CI  & HF & RHF\\
+    \hline
+    He & 5.29 & 2.25  & 2.50 & 2.50 \\
+    Be & 6.49 & 2.08  & 1.09 & 1.09 \\
+    \end{tabular}
+    \newline
+    \vspace*{10px}
+    \newline
+    \begin{tabular}{c|c|c|c|c}
+        Atom & CCD & RCCD & CCD(HF) & RCCD(HF) \\
+        \hline
+        He & 5.24 & 5.24 & 2.22 & 2.22 \\
+        Be & 6.46 & 6.46 & 1.05 & 1.05
+    \end{tabular}
+    \caption{ Relative error in \% for Helium and Beryllium from \cref{tab:res:helium_and_beryllium}, using the FCI results as the exact energies. }\label[tab]{tab:res:helium_and_beryllium_percent_error}
+\end{table}
+
+\subsection{Harmonic Oscillator}
