@@ -7,7 +7,7 @@ from math import exp
 class HarmonicsOscillator(Basis):
     def __init__(self, L=10, N=3, spinrestricted=True, omega=1, **kwargs):
         self.omega_ = omega
-        self.shell_numbers_ = np.arange(1, 10)
+        self.shell_numbers_ = np.arange(1, 13)
         self.degeneracies_ = 2*self.shell_numbers_
         self.cummulative_Ns_ = np.cumsum(self.degeneracies_)
 
@@ -114,7 +114,14 @@ class HarmonicsOscillator(Basis):
 
         return self
 if __name__ == '__main__':
-    ho = HarmonicsOscillator(L = 20, N=12, spinrestricted=False)
+    ho = HarmonicsOscillator(L = 156, N=12, spinrestricted=True)
+
+    for shell in ho.shell_numbers_:
+        print(shell, ho.cummulative_Ns_[shell-1])
+        for i in range(ho.cummulative_Ns_[shell-2], ho.cummulative_Ns_[shell-1]):
+            print(ho.p_to_n_[i])
+
+    print(ho.p_to_n_)
     # ho.calculate_OB()
     # ho.calculate_TB()
     # ho.make_AS()
