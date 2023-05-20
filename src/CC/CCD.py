@@ -1,5 +1,4 @@
 import numpy as np
-import textwrap
 from .CCbase import CCbase
 
 class CCD(CCbase):
