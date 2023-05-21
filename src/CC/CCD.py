@@ -58,6 +58,8 @@ class CCD(CCbase):
             E_mp2 = 0.25 * np.einsum("ijab,abij", v[occ, occ, vir, vir]**2, epsinv)
             assert np.isclose(E_CCD0, E_mp2), f"First iteration of CCD did not reproduce MP2 energy, {E_CCD0 = }, {E_mp2 =}"
 
+    def check_amplitude_symmetry(self, t):
+        np.testing.assert_almost_equal(t, -t.transpose(0,1,3,2), decimal=8)
 
 class RCCD(CCbase):
     def __init__(self, basis, **kwargs):
@@ -123,6 +125,10 @@ class RCCD(CCbase):
             E = np.einsum("ijba,abij,abij", v[occ,occ,vir,vir], v[vir,vir,occ,occ], epsinv)
             E_mp2 = 2*D-E
             assert np.isclose(E_CCD0, E_mp2), f"First iteration of CCD did not reproduce MP2 energy, {E_CCD0 = }, {E_mp2 =}"
+
+    def check_amplitude_symmetry(self, t):
+        np.testing.assert_almost_equal(t, t.transpose(1,0,3,2), decimal=8, verbose=True)
+
 
 if __name__ == '__main__':
     from ..basis.HarmonicsOscillator import HarmonicsOscillator

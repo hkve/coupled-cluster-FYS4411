@@ -43,11 +43,11 @@ class CCbase(ABC):
             deltaE_next = self.evalute_energy_iteration(t_next, v, occ, vir)
             diff = np.abs(deltaE_next - deltaE)
             
-            # np.testing.assert_allclose(t_next, -t_next.transpose(1,0,2,3), atol=1e-13)
             self.check_MP2_first_iter(iters, p, deltaE_next, v, occ, vir, epsinv)
 
             if vocal:
                 self.beVocal(diff, deltaE_next, deltaE, iters)
+                self.check_amplitude_symmetry(t_next)
 
             self.check_convergence(diff, iters, deltaE_next)
             deltaE = deltaE_next
@@ -92,7 +92,6 @@ class CCbase(ABC):
             Non-convergence of CCD calculation.
             {iters = }, {diff =}, {deltaE =}
             """))
-        
     
     def beVocal(self, diff, deltaE_next, deltaE, iters):
         print(textwrap.dedent(f"""
@@ -102,6 +101,9 @@ class CCbase(ABC):
     def check_MP2_first_iter(self, iters, p, E_CCD0, v, occ, vir, epsinv):
         if iters == 0:
             warnings.warn("This scheme does not implement MP2 energy check after first iteration")
+
+    def check_amplitude_symmetry(self, t):
+        warnings.warn("This scheme does not implement amplitude symmetry check")
 
     def __str__(self):
         if not self.has_run:
