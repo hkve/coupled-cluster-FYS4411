@@ -23,8 +23,6 @@ class CCbase(ABC):
 
         t = np.zeros(shape=(vir_range, vir_range, occ_range, occ_range))
 
-        # eps_v = np.diag(self.basis.h)[occ_range:]
-        # eps_o = np.diag(self.basis.h)[:occ_range]
         eps_v = np.diag(self.f)[occ_range:]
         eps_o = np.diag(self.f)[:occ_range]
 
@@ -53,7 +51,7 @@ class CCbase(ABC):
             deltaE = deltaE_next
             t = t_next
             iters += 1
-
+        
         self.has_run = True
         if(iters < maxiters):
             self.converged = True
@@ -94,9 +92,7 @@ class CCbase(ABC):
             """))
     
     def beVocal(self, diff, deltaE_next, deltaE, iters):
-        print(textwrap.dedent(f"""
-        {diff = }, {deltaE = }, {deltaE_next = }, {iters = }
-        """))
+        print(f"{diff = :.4e}, {deltaE = :.4f}, {deltaE_next = :.4f}, {iters = }")
     
     def check_MP2_first_iter(self, iters, p, E_CCD0, v, occ, vir, epsinv):
         if iters == 0:

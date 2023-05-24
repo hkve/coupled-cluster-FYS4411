@@ -43,11 +43,13 @@ class fastRCCD(RCCD):
         res += np.einsum("abmn,mnij->abij", t, W_hhhh, optimize=True)
         res += np.einsum("efij,abef->abij", t, v[vir,vir,occ,occ], optimize=True)
 
-        perm = np.einsum("aeim,mbej->abij", t, W_hpph, optimize=True) - np.einsum("eaim,mbej->abij", t, W_hpph, optimize=True)
+        X = np.einsum("aeim,mbej->abij", t, W_hpph, optimize=True)
+
+        perm = X - np.einsum("eaim,mbej->abij", t, W_hpph, optimize=True)
         perm = perm + perm.transpose(1,0,3,2)
         res += perm
 
-        perm = np.einsum("aeim,mbej->abij", t, W_hpph, optimize=True) + np.einsum("aeim,mbje->abij", t, W_hphp, optimize=True)
+        perm = X + np.einsum("aeim,mbje->abij", t, W_hphp, optimize=True)
         perm = perm + perm.transpose(1,0,3,2)
         res += perm
 

@@ -7,21 +7,32 @@ class CCD(CCbase):
         assert basis.is_AS_, f"Unrestricted CCD requires antisymmetric matrix elements" 
         super().__init__(basis, **kwargs)
         self.f = basis.h + np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_])
+        
+        occ, vir = basis.occ_, basis.vir_
+        self.f_pp_o = self.f[vir,vir].copy()
+        self.f_hh_o = self.f[occ,occ].copy()
+        np.fill_diagonal(self.f_pp_o, 0)
+        np.fill_diagonal(self.f_hh_o, 0)
+
 
     def next_iteration(self, t):
         f = self.f
+
         v = self.basis.v_
         occ, vir = self.basis.occ_, self.basis.vir_
+
+        f_pp_o = self.f_pp_o
+        f_hh_o = self.f_hh_o
 
         res = np.zeros_like(t)
 
         res += v[vir, vir, occ, occ] # v_abij
 
-        # tp = np.einsum("bc,acij->abij", f[vir, vir], t)
-        # res += (tp - tp.transpose(1,0,2,3))
+        tp = np.einsum("bc,acij->abij", f_pp_o, t)
+        res += (tp - tp.transpose(1,0,2,3))
 
-        # tp = np.einsum("kj,abik->abij", f[occ, occ], t)
-        # res -= (tp - tp.transpose(0,1,3,2))
+        tp = np.einsum("kj,abik->abij", f_hh_o, t)
+        res -= (tp - tp.transpose(0,1,3,2))
 
         # Two first sums, over cd and kl
         res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t, optimize=True)
@@ -69,6 +80,13 @@ class RCCD(CCbase):
         D = np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_], optimize=True)
         E = np.einsum("piiq->pq", basis.v[:, basis.occ_, basis.occ_, :], optimize=True)
         self.f = basis.h + 2*D - E
+
+        occ, vir = basis.occ_, basis.vir_
+        self.f_pp_o = self.f[vir,vir].copy()
+        self.f_hh_o = self.f[occ,occ].copy()
+        np.fill_diagonal(self.f_pp_o, 0)
+        np.fill_diagonal(self.f_hh_o, 0)
+
         
     def evalute_energy_iteration(self, t, v, occ, vir):
         D = np.einsum("ijab,abij", v[occ, occ, vir, vir], t, optimize=True)
