@@ -1,3 +1,29 @@
+\subsection{Computational Considerations}
+The methods used to solve both the HF and CCD equations will be outlined in the following section. 
+
+\subsubsection{Hartree-Fock}
+Solving \cref{eq:theo:hartreefock_eigenvalueproblem} is as stated simply an eigenvalue problem, with $\epsilon$ and $C$ as eigenvalues and vectors respectively. However, we see from \cref{eq:theo:hartree_fock_matrix_and_density} that the construction of $\hamhf{\alpha\beta}$ requires the density matrix $\rho$ which again is dependent on the coefficients. To find the correct minimization coefficients an iterative scheme was applied. The initial guess was always chosen to be $C^{(0)}_{ii} = 1$ \footnote{Note that this is over occupied states only}. As a stopping criterion, the sum of Lagrange multipliers per occupied states between iterations was used.
+
+\begin{algorithmic}
+    \State $C^{(0)}_{ii} \gets 1$
+    
+    \While{$\Delta > \text{tol}$}
+        \State $\hamhf{} \gets f(C^{(n-1)})$ \cref{eq:theo:hartree_fock_matrix_and_density}
+        \State $C^{(n)} \gets \text{Eigenvectors}(\hamhf{})$
+        \State $\epsilon^{(n)} \gets \text{Eigenvalues}(\hamhf{})$
+        \State $\Delta \gets \sum |\epsilon^{(n)}-\epsilon^{(n-1)}|/N$ 
+    \EndWhile
+\end{algorithmic}
+    
+
+, then constructing $\hamhf{\alpha\beta}$ based on this and solving the eigenvalueproblem to obtain $C^{(1)}_{ii}$
+
+repeatedly diagonalizing $C$. 
+
+\subsubsection{Coupled Cluster}
+
+\subsection{Closed-shell Spin Restriction}
+
 \subsection{Quantum Mechanical System}
 
 \subsubsection{Helium and Beryllium}
@@ -36,7 +62,7 @@ The one-body Hamiltonian is diagonal, with the well known energies
 \begin{align}
     E_{n_x,n_y} = \hbar \omega (n_x + n_y + 1) \label[eq]{eq:met:ho_sp}
 \end{align}
-for two dimensions. For the Coulomb integral from \cref{eq:met:2dho_hamiltonian} a more nuanced consideration is in order. The simplest approach is to solve the Coulomb integrals numerically, however even though we just work in two dimensions, the integral will be two-dimensional with a quite complex integrand. For larger basis sets where $L \sim 100$, this approach can not be performed without any clever performance tricks. Luckily this problem has been solved analytically spherical coordinates \citep{anisimovasEnergySpectraFewelectron1998}, giving a much cheaper way to incorporate the Coulomb integrals. The implementation co-authored by Ø. Schøyen has been used \footnote{Implementation is present at \url{https://github.com/HyQD/quantum-systems/tree/master}}.
+for two dimensions. For the Coulomb integral from \cref{eq:met:2dho_hamiltonian} a more nuanced consideration is in order. The simplest approach is to solve the Coulomb integrals numerically, however even though we just work in two dimensions, the integral will be two-dimensional with a quite complex integrand. For larger basis sets where $L \sim 100$, this approach can not be performed without any clever performance tricks. Luckily this problem has been solved analytically in spherical coordinates \citep{anisimovasEnergySpectraFewelectron1998}, giving a much cheaper way to incorporate the Coulomb integrals. The implementation co-authored by Ø. Schøyen has been used \footnote{Implementation is present at \url{https://github.com/HyQD/quantum-systems/tree/master}}.
 
 We will consider closed shell systems, that is the particle number $N$ will always correspond to all sets of $(n_x, n_y)$ which gives the same single particle energy from \cref{eq:met:ho_sp} and every energy below this. These shell closures are tabulated in \cref{tab:met:ho_shell_numbers}.
 

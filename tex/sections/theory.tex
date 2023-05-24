@@ -73,16 +73,14 @@ and thus the relevant Lagrangian then becomes
 \end{align*}
 The equation to solve are then found by considering a stationary point of the Lagrangian $\delta \mathcal{L} = 0$ wrt. the coefficients $C$. Performing this minimization, we achieve an eigenvalue problem with the matrix
 \begin{align}
-    \hamhf{\alpha\beta} = \hshort{\alpha}{\beta} + \sum_{\gamma\delta} \rho_{\gamma\delta} \elmASshort{\alpha\gamma}{\beta \delta}, \hspace{20px} \rho_{\gamma\delta} = \sum_i C^*_{\gamma i} C_{\delta i} 
+    \hamhf{\alpha\beta} = \hshort{\alpha}{\beta} + \sum_{\gamma\delta} \rho_{\gamma\delta} \elmASshort{\alpha\gamma}{\beta \delta}, \hspace{20px} \rho_{\gamma\delta} = \sum_i C^*_{\gamma i} C_{\delta i} \label[eq]{eq:theo:hartree_fock_matrix_and_density} 
 \end{align}
 having the coefficients as eigenvectors and the Lagrange multipliers as eigenvalues
 \begin{align}
-    \sum_{\beta} \hamhf{\alpha \beta} C_{i \beta} = \epsilon_i C_{i \alpha}.
+    \sum_{\beta} \hamhf{\alpha \beta} C_{i \beta} = \epsilon_i C_{i \alpha}. \label{eq:theo:hartreefock_eigenvalueproblem}
 \end{align}
-Where the Lagrange multipliers are diagonal since by their Hermiticity we can perform a unitary transformation to a basis where they are diagonal $\epsilon = U \epsilon' U^\dagger$.
-
-
-\comment{method?} This is solved iteratively, starting with $C_{ii} = 1$ \footnote{Note that this is over occupied states}, repeatedly diagonalizing $C$. As a stopping criteria, the sum of Lagrange multipliers per occupied states between iterations is used. 
+Where the Lagrange multipliers are diagonal since by their Hermiticity we can perform a unitary transformation to a basis where they are diagonal $\epsilon = U \epsilon' U^\dagger$. In addition, the matrix $\rho_{\gamma \delta}$ can be interpreted as the density matrix.
+ 
 \subsection{Coupled Cluster}
 The exact solution $\ket{\Psi}$ is approximated by an exponential ansatz $\ketCC$ 
 \begin{align}
@@ -152,7 +150,7 @@ with the amplitude equation in its pure glory (using Einstein summation conventi
         &+ \frac{1}{2} \elmASshort{ab}{cd} \amplitude{cd}{ij} + \frac{1}{2} \elmASshort{kl}{ij} \amplitude{ab}{kl} + \permoperator{ab} \permoperator{ij}\elmASshort{kb}{cj} \amplitude{ac}{ik} \\
         &+ \frac{1}{4}\elmASshort{kl}{cd} \amplitude{cd}{ij} \amplitude{ab}{kl} + \permoperator{ij} \elmASshort{kl}{cd} \amplitude{ac}{ik} \amplitude{bd}{jl} \\
         &- \frac{1}{2} \permoperator{ij} \elmASshort{kl}{cd} \amplitude{dc}{ik} \amplitude{ab}{lj} - \frac{1}{2} \permoperator{ab} \elmASshort{kl}{cd} \amplitude{ac}{lk} \amplitude{db}{lj} = 0.
-    \end{split}
+    \end{split}\label[eq]{eq:theo:Amplitude_CCD_explicit}
 \end{align}
 Here we have defined permutation operators $\permoperator{pq} = 1 - \permoperatorshort{pq}$, where $\permoperatorshort{pq}$ interchanges the two indices $p$ and $q$.
 
