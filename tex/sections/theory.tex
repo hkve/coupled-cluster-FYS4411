@@ -42,7 +42,7 @@ The operators inside the curly brackets denotes \textit{normal ordering}. In con
 \begin{align*}
     \fshort{p}{q} = \hshort{p}{q} + \sum_i \elmASshort{pi}{qi}
 \end{align*}
-One major reason for doing this is the applicability of the \textit{Generalized Wicks Theorem}, such that we only need to consider contractions between different normal ordered strings \citep{ferialdiGeneralWickTheorem2021}.
+One major reason for doing this is the applicability of the \textit{Generalized Wicks Theorem} (GWT), such that we only need to consider contractions between different normal ordered strings \citep{ferialdiGeneralWickTheorem2021}.
 
 \begin{align}
     \hat{H}\ket{\Psi} = E \ket{\Psi} \label[eq]{eq:theo:schroding_equation}
@@ -129,15 +129,32 @@ named the \textit{energy equation}. Considering excited states, we arrive at the
     \braexed{ab\ldots}{ij\ldots} \simham \ketansatz \label[eq]{eq:theo:amplitude_equations},
 \end{align}
 used for finding the unknown amplitudes $\amplitude{ab}{ij}$. To find explicit expressions for \cref{eq:theo:energy_equation_sim_transformed} and \cref{eq:theo:amplitude_equations}, we expand $\simham$ using the Hausdorff expansion
-\begin{align*}
-    \simham &= \hamno + \commutator{\hamno}{\cluster{2}} + \frac{1}{2!}\commutator{\commutator{\hamno}{\cluster{2}}}{\cluster{2}}.
-\end{align*}
-The truncation at the two-fold commutator comes from the fact that we have a two-body interaction. When evaluated with a doubly excited state, at least one creation or annihilation operator from each of the cluster operators has to be contracted with $\hamno$. Therefor having eight creation and annihilation operators in two $\cluster{2}$, four of them can be contracted with the four from $\hamno$, while the other four with the operators from $\braexed{ab}{ij}$. This gives the CCD amplitude equation calculated from 
+\begin{align}
+    \simham &= \hamno + \commutator{\hamno}{\cluster{2}} + \frac{1}{2!}\commutator{\commutator{\hamno}{\cluster{2}}}{\cluster{2}}. \label[eq]{eq:theo:ham_commutator_expansion}
+\end{align}
+The truncation at the two-fold commutator comes from the fact that we have a two-body interaction combined with $\cluster{2}$ only performing double excitations. When evaluated with a doubly excited state, at least one creation or annihilation operator from each of the cluster operators has to be contracted with $\hamno$. Therefor having eight creation and annihilation operators in two $\cluster{2}$, four of them can be contracted with the four from $\hamno$, while the other four with the operators from $\braexed{ab}{ij}$. This gives the CCD amplitude equation calculated from 
 
 \begin{align}
     \braexed{ab}{ij}\simham\ketansatz = 0 \label[eq]{eq:theo:amplitude_equation_CCD}
 \end{align}
-To make practical use of \cref{eq:theo:energy_equation_sim_transformed} and \cref{eq:theo:amplitude_equation_CCD}
+The calculations can be further simplified from \cref{eq:theo:ham_commutator_expansion}, noting that any creation operator $\crt{a}$ or annihilation operator $\ani{i}$ to the left of $\hamno$ can not give any non-zero contractions due to the lack of a $\ani{a}$ or $\crt{i}$ to its left. Therefor we only get contribution from fully contracted $\hamno$, $\hamno \cluster{2}$ and $\hamno \cluster{2}\cluster{2}$ terms, where each $\cluster{2}$ has at least one leg in $\hamno$.  
+
+To make practical use of \cref{eq:theo:energy_equation_sim_transformed} and \cref{eq:theo:amplitude_equation_CCD}, a chain of contractions applying the GWT has to be performed. This is a tedious task, thus all amplitude and energy equations here has been calculated using \verb|Drudge| \footnote{Drudge / Gristmill, Symbolic tensor and non-commutative algebra with powerful automatic code generation and optimization, written by Jinmo Zhao and Gustavo E Scuseria, \url{https://tschijnmo.github.io/drudge/}}. The energy equation becomes
+
+\begin{align}
+    \DECCD = \frac{1}{4} \sum_{abij} \elmASshort{ij}{ab} \amplitude{ab}{ij} \label[eq]{eq:theo:Energy_CCD_explicit},
+\end{align}
+with the amplitude equation in its pure glory (using Einstein summation convention)
+
+\begin{align}
+    \begin{split}
+        &\elmASshort{ab}{ij} + \permoperator{ab} \fshort{b}{c} \amplitude{ac}{ij} - \permoperator{ij} \fshort{k}{j} \amplitude{ab}{ik} \\
+        &+ \frac{1}{2} \elmASshort{ab}{cd} \amplitude{cd}{ij} + \frac{1}{2} \elmASshort{kl}{ij} \amplitude{ab}{kl} + \permoperator{ab} \permoperator{ij}\elmASshort{kb}{cj} \amplitude{ac}{ik} \\
+        &+ \frac{1}{4}\elmASshort{kl}{cd} \amplitude{cd}{ij} \amplitude{ab}{kl} + \permoperator{ij} \elmASshort{kl}{cd} \amplitude{ac}{ik} \amplitude{bd}{jl} \\
+        &- \frac{1}{2} \permoperator{ij} \elmASshort{kl}{cd} \amplitude{dc}{ik} \amplitude{ab}{lj} - \frac{1}{2} \permoperator{ab} \elmASshort{kl}{cd} \amplitude{ac}{lk} \amplitude{db}{lj} = 0.
+    \end{split}
+\end{align}
+Here we have defined permutation operators $\permoperator{pq} = 1 - \permoperatorshort{pq}$, where $\permoperatorshort{pq}$ interchanges the two indices $p$ and $q$.
 
 \subsection{Spin restriction}
 Both the HF and CCD frameworks presented here treats matrix elements including spin. If the Hamiltonian is spin-independent, both storing and summation over matrix elements can be significantly reduced. Separating relevant quantum numbers and spin, explicitly $p = (P,\sigma_P)$ with $P$ as relevant numbers and $\sigma_P$ as spin, we see that a general matrix element
