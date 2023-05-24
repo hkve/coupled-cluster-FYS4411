@@ -36,7 +36,7 @@ class fastRCCD(RCCD):
         res += v[vir, vir, occ, occ]
 
         perm = np.einsum("aeij,be->abij", t, F_pp, optimize=True) - np.einsum("abim,mj->abij", t, F_hh, optimize=True)
-        perm = perm - perm.transpose(1,0,3,2)
+        perm = perm + perm.transpose(1,0,3,2)
 
         res += perm
 
@@ -44,30 +44,30 @@ class fastRCCD(RCCD):
         res += np.einsum("efij,abef->abij", t, v[vir,vir,occ,occ], optimize=True)
 
         perm = np.einsum("aeim,mbej->abij", t, W_hpph, optimize=True) - np.einsum("eaim,mbej->abij", t, W_hpph, optimize=True)
-        perm = perm - perm.transpose(1,0,3,2)
+        perm = perm + perm.transpose(1,0,3,2)
         res += perm
 
-        perm = np.einsum("aeim,mbej->abij", t, W_hpph, optimize=True) - np.einsum("aeim,mbje->abij", t, W_hphp, optimize=True)
-        perm = perm - perm.transpose(1,0,3,2)
+        perm = np.einsum("aeim,mbej->abij", t, W_hpph, optimize=True) + np.einsum("aeim,mbje->abij", t, W_hphp, optimize=True)
+        perm = perm + perm.transpose(1,0,3,2)
         res += perm
 
         perm = np.einsum("aemj,mbie->abij", t, W_hphp, optimize=True)
-        perm = perm - perm.transpose(1,0,3,2)
+        perm = perm + perm.transpose(1,0,3,2)
         res += perm
         
         return res
 
     def F_intermediate_pp(self, f, v, t, occ, vir):
         res = -2*np.einsum("afmn,mnef->ae", t, v[occ,occ,vir,vir], optimize=True)
-        res += np.einsum("afmn,mnfe->ae",t,v[occ,occ,vir,vir])
+        res += np.einsum("afmn,mnfe->ae",t,v[occ,occ,vir,vir], optimize=True)
 
-        return res + f[vir,vir]
+        return res# + f[vir,vir]
 
     def F_intermediate_hh(self, f, v, t, occ, vir):
         res = 2*np.einsum("efin,mnef->mi", t, v[occ,occ,vir,vir], optimize=True)
         res -= np.einsum("efin,mnfe->mi", t, v[occ,occ,vir,vir], optimize=True)
 
-        return res + f[occ, occ]
+        return res #+ f[occ, occ]
     
     def W_intermediate_hhhh(self, v, t, occ, vir):
         res = np.einsum("efij,mnef->mnij", t, v[occ,occ,vir,vir], optimize=True)
