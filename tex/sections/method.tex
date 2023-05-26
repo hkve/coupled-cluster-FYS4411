@@ -22,10 +22,58 @@ Solving \cref{eq:theo:hartreefock_eigenvalueproblem} is as stated simply an eige
 \subsubsection{Coupled Cluster}
 The approach for solving the amplitudes in \cref{eq:theo:amplitude_equation_CCD} follow much the same methodology as the HF iterative scheme. Fixed point iterations are a common solution to solving non-linear sets of coupled equations, and is relatively easy to formulate.
 
-Going back to the amplitude equation \cref{eq:theo:Amplitude_CCD_explicit} we extract the off-diagonal part of $f_{pq}$ as $f_{pq}^o$ 
+Going back to the amplitude equation \cref{eq:theo:Amplitude_CCD_explicit} we separate the diagonal and off-diagonal part of $f_{pq}$ as $f_{p}^D$ and $f_{pq}^O$ respectively
 
-\subsection{Closed-shell Spin Restriction}
+\begin{align*}
+    f_{pq} = \delta_{pq} f_{pp} + (1-\delta_{pq})f_{pq} = f_{p}^D + f_{pq}^O.
+\end{align*}
+Considering the $\permoperator{ab}$ term with the Fock matrix
+\begin{align*}
+    \permoperator{ab} f_{bc} \amplitude{ac}{ij} = f_{bc}\amplitude{ac}{ij} - f_{ac}\amplitude{bc}{ij},
+\end{align*}
+we can insert the diagonal and off-diagonal partition of the Fock matrix giving
 
+\begin{align*}
+    t_{bc} \amplitude{ac}{ij} &= \delta_{bc}f_{bb}\amplitude{ac}{ij} + (1-\delta_{bc})f_{bc}\amplitude{bc}{ij} \\
+    &= f_{b}^D \amplitude{ab}{ij} + f_{bc}^O \amplitude{ac}{ij}
+\end{align*}
+Similarly 
+\begin{align*}
+    f_{ac}\amplitude{bc}{ij} = -f_a^D \amplitude{ab}{ij} + f_{ac}^O \amplitude{bc}{ij}
+\end{align*}
+Meaning that the $\permoperator{ab}$ Fock matrix term can be expressed as the sum over the off-diagonal part, in addition to a no-sum $f_a^D + f_b^D$ term.
+\begin{align*}
+    \permoperator{ab}f_{bc}\amplitude{ac}{ij} = (f_a^D + f_b^D)\amplitude{ab}{ij} + \permoperator{ab}f_{bc}\amplitude{ac}{ij}
+\end{align*}
+Performing the same decomposition for the $\permoperatorshort{ij}$ yields the same decomposition. If we go back to \cref{eq:theo:Amplitude_CCD_explicit} and call every term except the pure diagonal term $R^{ab}_{ij}(t)$ \footnote{Note that this is a function of the amplitudes \textit{resulting} in the four-index term after the sums has been performed.} we get 
+\begin{align*}
+    \mathcal{F}^{ab}_{ij}\amplitude{ab}{ij} + R^{ab}_{ij}(t) &= 0, \\ 
+    \amplitude{ab}{ij} &= -\frac{R^{ab}_{ij}(t)}{\mathcal{F}^{ab}_{ij}},
+\end{align*}
+where we have defined 
+\begin{align*}
+    \mathcal{F}^{ab}_{ij} = f_a^D + f_b^D -f_i^D - f_j^D.
+\end{align*}
+Note that $\mathcal{F}^{ab}_{ij}$ is iteration independent and can be precomputed. This gives a function suitable for fixed point iterations. It is also possible to calculate the new amplitudes using some percentage of the old amplitudes, \textit{slowly mixing} in the new iterations. Parameterized by the mixing parameter $p \in [0,1)$, we update the amplitudes following  
+
+\begin{align}
+    \amplitude{ab,(n+1)}{ij} = p\amplitude{ab,(n)}{ij} + (1-p)\frac{R^{ab}_{ij}(t^{(n)})}{\mathcal{F}^{ab}_{ij}} \label[eq]{eq:met:amplitudes_update_rule}
+\end{align}
+Convergence is determined by finding stable solutions to $\amplitude{ab}{ij}$ thus we evaluate the CCD contribution \cref{eq:theo:Energy_CCD_explicit} each iteration and stop when the difference between iterations is lower than some predetermined tolerance. The procedure is outlined in \cref{algo:met:ccd}
+
+\begin{algorithm}[H]
+    \begin{algorithmic}
+        \State $\amplitude{ab(0)}{ij} \gets 0$
+        
+        \While{$\Delta > \Delta_0$}
+        \State $\hamhf{} \gets f(C^{(n-1)})$ \cref{eq:theo:hartree_fock_matrix_and_density}
+        \State $C^{(n)} \gets \text{Eigenvectors}(\hamhf{})$
+        \State $\epsilon^{(n)} \gets \text{Eigenvalues}(\hamhf{})$
+        \State $\Delta \gets \sum |\epsilon^{(n)}-\epsilon^{(n-1)}|/N$ 
+        \EndWhile
+    \end{algorithmic}
+    \caption{Outline of Hartree-Fock iterative scheme.} \label[algo]{algo:met:ccd}
+\end{algorithm}
 \subsection{Quantum Mechanical System}
 
 \subsubsection{Helium and Beryllium}
