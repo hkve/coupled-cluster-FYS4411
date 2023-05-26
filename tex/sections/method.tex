@@ -2,25 +2,27 @@
 The methods used to solve both the HF and CCD equations will be outlined in the following section. 
 
 \subsubsection{Hartree-Fock}
-Solving \cref{eq:theo:hartreefock_eigenvalueproblem} is as stated simply an eigenvalue problem, with $\epsilon$ and $C$ as eigenvalues and vectors respectively. However, we see from \cref{eq:theo:hartree_fock_matrix_and_density} that the construction of $\hamhf{\alpha\beta}$ requires the density matrix $\rho$ which again is dependent on the coefficients. To find the correct minimization coefficients an iterative scheme was applied. The initial guess was always chosen to be $C^{(0)}_{ii} = 1$ \footnote{Note that this is over occupied states only}. As a stopping criterion, the sum of Lagrange multipliers per occupied states between iterations was used.
+Solving \cref{eq:theo:hartreefock_eigenvalueproblem} is as stated simply an eigenvalue problem, with $\epsilon$ and $C$ as eigenvalues and vectors respectively. However, we see from \cref{eq:theo:hartree_fock_matrix_and_density} that the construction of $\hamhf{\alpha\beta}$ requires the density matrix $\rho$ which again is dependent on the coefficients. To find the correct minimization coefficients an iterative scheme was applied. The initial guess was always chosen to be $C^{(0)}_{ii} = 1$ \footnote{Note that this is over occupied states only}. As a stopping criterion, the sum of Lagrange multipliers per occupied states between iterations $\Delta$ was used. The iterations stop when $\Delta$ is below a predetermined tolerance $\Delta_0$. This approach is outlined in \cref{algo:met:hartreefock}.
 
-\begin{algorithmic}
-    \State $C^{(0)}_{ii} \gets 1$
-    
-    \While{$\Delta > \text{tol}$}
+\begin{algorithm}[H]
+    \begin{algorithmic}
+        \State $C^{(0)}_{ii} \gets 1$
+        
+        \While{$\Delta > \Delta_0$}
         \State $\hamhf{} \gets f(C^{(n-1)})$ \cref{eq:theo:hartree_fock_matrix_and_density}
         \State $C^{(n)} \gets \text{Eigenvectors}(\hamhf{})$
         \State $\epsilon^{(n)} \gets \text{Eigenvalues}(\hamhf{})$
         \State $\Delta \gets \sum |\epsilon^{(n)}-\epsilon^{(n-1)}|/N$ 
-    \EndWhile
-\end{algorithmic}
-    
+        \EndWhile
+    \end{algorithmic}
+    \caption{Outline of Hartree-Fock iterative scheme.} \label[algo]{algo:met:hartreefock}
+\end{algorithm}
 
-, then constructing $\hamhf{\alpha\beta}$ based on this and solving the eigenvalueproblem to obtain $C^{(1)}_{ii}$
-
-repeatedly diagonalizing $C$. 
 
 \subsubsection{Coupled Cluster}
+The approach for solving the amplitudes in \cref{eq:theo:amplitude_equation_CCD} follow much the same methodology as the HF iterative scheme. Fixed point iterations are a common solution to solving non-linear sets of coupled equations, and is relatively easy to formulate.
+
+Going back to the amplitude equation \cref{eq:theo:Amplitude_CCD_explicit} we extract the off-diagonal part of $f_{pq}$ as $f_{pq}^o$ 
 
 \subsection{Closed-shell Spin Restriction}
 
