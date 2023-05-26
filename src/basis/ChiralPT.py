@@ -43,7 +43,7 @@ class ChiralPT(Basis):
     def calculate_OB(self):
         for i, nums in enumerate(self.qnums):
             n, l = self.qnums[i]["n"], self.qnums[i]["l"]
-            self.h_[i,i] = 16*(2*n+l+1.5) # MeV
+            self.h_[i,i] = 10*(2*n+l+1.5) # MeV
 
     def load_elements(self, filename):
         with open(filename, "r") as file:
