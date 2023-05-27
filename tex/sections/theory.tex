@@ -1,4 +1,4 @@
-\subsection{Mathematical framework and notation}
+\subsection{Mathematical Framework and Notation}
 In the following we will use the occupation representation, making use of creation $\crta{p}$ and annihilation $\ania{p}$ operators. As a shorthand, we will write $\crt{p} \equiv \crta{p}$ and $\ani{p} \equiv \ania{p}$ when no confusion can be made. $N$ represents the number of occupied states while $L$ the total number of states in our calculations. The indicies $p,q,\ldots$ are reserved for the $L$ general states, the $N$ occupied states are indexed by $i,j,\ldots$, while the $M \equiv L-N$ unoccupied (virtual) states by $a,b,\ldots$ indicies.
 
 Since we are treating fermionic systems, the canonical anticommutation relations are used
@@ -97,7 +97,7 @@ where $m \leq N$. The scalars $\amplitude{ab\ldots}{ij\ldots}$ are unknown expan
 \end{align}
 Here $P$ and $P'$ permutes $\sigma(P)$ and $\sigma(P')$ indices respectively. This is the reason for the prefactor of \cref{eq:theo:cluster_operators_general}, since we have $m!$ ways to independently permute particle and hole indices. Instead of having $(L-N)^m N^m$ independent unknowns, we reduce this number by a factor of $(m!)^{2}$. 
 
-\subsection{Doubles truncation}
+\subsection{Doubles Truncation}
 Considering $N$ cluster operators in the exponential ansatz of \cref{eq:theo:exponential_ansatz} is not computationally feasible for realistic systems. The common practice is to include one or more $\cluster{m}$ operators, making a truncation on $\ketCC$ as well. In the following we will include only the double excitation operator $\cluster{2}$, know as the CCD approximation. This gives us 
 \begin{align}
     \ket{\Psi} &\approx \ketCC \approx \ketCCD \equiv \exp{\cluster{2}} \ketansatz \label[eq]{eq:theo:CCD_exponential_ansatz}, \\
@@ -153,10 +153,3 @@ with the amplitude equation in its pure glory (using Einstein summation conventi
     \end{split}\label[eq]{eq:theo:Amplitude_CCD_explicit}
 \end{align}
 Here we have defined permutation operators $\permoperator{pq} = 1 - \permoperatorshort{pq}$, where $\permoperatorshort{pq}$ interchanges the two indices $p$ and $q$.
-
-\subsection{Spin restriction}
-Both the HF and CCD frameworks presented here treats matrix elements including spin. If the Hamiltonian is spin-independent, both storing and summation over matrix elements can be significantly reduced. Separating relevant quantum numbers and spin, explicitly $p = (P,\sigma_P)$ with $P$ as relevant numbers and $\sigma_P$ as spin, we see that a general matrix element
-\begin{align*}
-    \elm{pq}{rs} = \elm{PQ}{RS} \delta_{\sigma_P \sigma_R} \delta_{\sigma_Q \sigma_S},
-\end{align*}
-only gives non-zero contributions when both the spins of $p,r$ and $q,s$ align. This reduces 16 equal (or vanishing) elements to a single element, improving both storage and computation time. To make use of this however, we must explicitly expand matrix elements and perform spin summations.

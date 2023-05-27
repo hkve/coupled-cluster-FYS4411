@@ -104,7 +104,28 @@ which again has the time complexity $\mathcal{O}(M^4 N^2)$. At the penalty of st
 \end{align*}
 which will be faster, but not lower the over scaling below $\mathcal{O}(M^4 N^2)$. For the CCD equations, there are no reuse of intermediates and only the summation order yields better time complexities. Through the tensor contraction functionality of \verb|NumPy| \citep{vanderwaltNumPyArrayStructure2011}, optimal paths can be calculated before the summation is performed. Therefor the potential optimizations of this approach was deemed neglectable. 
 
-There are however more possibilities for optimization which was not considered here. Based on symmetries of the two-body interaction, only matrix elements which we a priori know will not necessarily be zero can be considered by storing matrix elements and amplitudes in different \textit{symmetry channels}. Additionally, with some index mapping, matrix storage can used allowing for full \verb|BLAS| functionality \citep{blackford2002updated}.    
+There are however more possibilities for optimization which was not considered here. Based on symmetries of the two-body interaction, only matrix elements which we a priori know will not necessarily be zero can be considered by storing matrix elements and amplitudes in different \textit{symmetry channels}. Additionally, with some index mapping, matrix storage can used allowing for full \verb|BLAS| functionality \citep{blackford2002updated}.
+
+\subsection{Spin restriction}
+Both the HF and CCD frameworks presented here treats matrix elements including spin. If the Hamiltonian is spin-independent, both storing and summation over matrix elements can be significantly reduced. Separating relevant quantum numbers and spin, explicitly $p = (P,\sigma_P)$ with $P$ as relevant numbers and $\sigma_P$ as spin, we see that a general matrix element
+\begin{align*}
+    \elm{pq}{rs} = \elm{PQ}{RS} \delta_{\sigma_P \sigma_R} \delta_{\sigma_Q \sigma_S},
+\end{align*}
+only gives non-zero contributions when both the spins of $p,r$ and $q,s$ align. This reduces the number of matrix elements by a constant factor of 16, improving both storage and computation time. To make use of this however, we must rewrite our equations to use normal matrix elements, instead of antisymmetrized elements. 
+\subsubsection{Hartree-Fock}
+Taking the reference energy from the Hartree-Fock Lagrangian
+
+\begin{align*}
+    \sum_i \hshort{i}{i} + \frac{1}{2}\sum_{ij} \elmASshort{ij}{ij} = 2\sum_I \hshort{I}{I} + \sum_{IJ} \pclosed{2\elmshort{IJ}{IJ}-\elmshort{IJ}{JI}}
+\end{align*}
+
+\begin{align*}
+    \hamhf{AB} = h_{AB} + \sum_{G D} \rho_{GD} \elmshort{A G}{B D} - \frac{1}{2}\sum_{G D} \rho_{GD}\elmshort{AG}{DB}
+\end{align*}
+
+\begin{align*}
+    \rho_{GD} = 2\sum_i C^*_{G I} C_{D I}
+\end{align*}
 \subsection{Quantum Mechanical System}
 
 \subsubsection{Helium and Beryllium}
