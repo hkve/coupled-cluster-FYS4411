@@ -73,7 +73,38 @@ Convergence is determined by finding stable solutions to $\amplitude{ab}{ij}$ th
     \end{algorithmic}
     \caption{Outline of CCD iterative scheme.} \label[algo]{algo:met:ccd}
 \end{algorithm}
+The choice of all zeros for $t^{(0)}$ is somewhat arbitrary, and different choices can be made constrained to the symmetry requirements of \cref{eq:theo:amplitude_permutation_symmetry}. Since we have chosen all zeros, the first iteration will always yield
 
+\begin{align*}
+    \amplitude{ab,(1)}{ij} = \frac{\elmASshort{ab}{ij}}{\mathcal{F}^{ab}_{ij}}
+\end{align*}
+which gives an energy equal to the many-body perturbation theory to the second order (MBPT2)
+\begin{align*}
+    \DECCD^{(1)} = \sum_{\substack{ab\\ij}} \frac{|\elmASshort{ab}{ij}|^2}{f_a^D + f_b^D -f_i^D - f_j^D} = \Delta E_{\text{MBPT2}}.
+\end{align*} 
+This displays the perturbative nature of the CC equations. Alternatively one could initialize the amplitudes to give the MBPT2 energy, however due to the miniscule performance enhancements for the systems investigated here, this was not considered necessary.   
+\subsubsection{Numerical efficacy}
+The iterative amplitude scheme relies heavily on contraction of the rank-4 tensors $\amplitude{pq}{rs}$ and $\elmASshort{pq}{rs}$. Taking the four contraction term with no permutation from \cref{eq:theo:Amplitude_CCD_explicit} remembering the summation convention
+
+\begin{align}
+    \frac{1}{4}\elmASshort{kl}{cd}\amplitude{cd}{ij}\amplitude{ab}{kl} \equiv \mathcal{T}^{ab}_{ij}, \label[eq]{eq:met:term_to_be_optimized}
+\end{align}
+we see that we have two sums over the virtual states contributing a factor $M^2$, while also having a sum over occupied states contributing $N^2$. Since we create an object $\mathcal{T}^{ab}_{ij}$, these contractions have to be performed for $M^2$ virtual and $N^2$ occupied indices, giving this term a total time-complexity of $\mathcal{O}(N^4 M^4)$. Considering a sum over an \textit{intermediate} tensor 
+\begin{align*}
+    \chi^{ab}_{cd} = \frac{1}{4}\amplitude{ab}{kl}\elmASshort{kl}{cd},
+\end{align*}
+we latch on a time complexity $\mathcal{O}(M^4 N^2)$. By then again contracting with an amplitude, we recover the original contraction from \cref{eq:met:term_to_be_optimized}
+\begin{align*}
+    \amplitude{cd}{ij}\chi^{ab}_{cd} = \frac{1}{4} \amplitude{cd}{ij}\amplitude{ab}{kl} \elmASshort{kl}{cd}
+\end{align*}
+which again has the time complexity $\mathcal{O}(M^4 N^2)$. At the penalty of storing the $M^4$ elements of $\chi^{ab}_{cd}$, we have reduced the time complexity by a factor of $N^2$. We could also include more terms in $\chi^{ab}_{ij}$ such that more than one term of \cref{eq:theo:Amplitude_CCD_explicit} can be computed
+\begin{align*}
+    \chi^{ab}_{ij} &= \frac{1}{4}\amplitude{ab}{kl}\elmASshort{kl}{cd} + \frac{1}{2} \elmASshort{ab}{cd} \\
+    \amplitude{cd}{ij}\chi^{ab}_{cd} &= \frac{1}{4} \amplitude{cd}{ij}\amplitude{ab}{kl} \elmASshort{kl}{cd} + \frac{1}{2}\elmASshort{ab}{cd}\amplitude{cd}{ij}
+\end{align*}
+which will be faster, but not lower the over scaling below $\mathcal{O}(M^4 N^2)$. For the CCD equations, there are no reuse of intermediates and only the summation order yields better time complexities. Through the tensor contraction functionality of \verb|NumPy| \citep{vanderwaltNumPyArrayStructure2011}, optimal paths can be calculated before the summation is performed. Therefor the potential optimizations of this approach was deemed neglectable. 
+
+There are however more possibilities for optimization which was not considered here. Based on symmetries of the two-body interaction, only matrix elements which we a priori know will not necessarily be zero can be considered by storing matrix elements and amplitudes in different \textit{symmetry channels}. Additionally, with some index mapping, matrix storage can used allowing for full \verb|BLAS| functionality \citep{blackford2002updated}.    
 \subsection{Quantum Mechanical System}
 
 \subsubsection{Helium and Beryllium}
