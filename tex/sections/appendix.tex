@@ -1,4 +1,4 @@
-\section{Hydrogen Coulomb integrals}\label[sec]{sec:app:hydrogen_coulomb_integrals}
+\subsection{Hydrogen Coulomb integrals}\label[app]{sec:app:hydrogen_coulomb_integrals}
 Considering states without orbital angular momentum, we remove the dependence on the two quantum numbers $l$ and $m$, giving
 
 \begin{align*}
@@ -11,3 +11,45 @@ Where we work in distances of the Bohr radius $r/a_0 \longrightarrow r$. Since t
     \hat{v}(\vec{r}_1, \vec{r}_2) = \frac{Z}{|\vec{r}_1 - \vec{r}_2|} = \frac{Z}{\sqrt{r_1^2 + r_2 ^2 - 2r_1 r_2 \cos \theta_2 }} \label[eq]{eq:app:coulomb_interaction}
 \end{align}
 With these preparations, the integrals can be solved for all $p,q,r,s$ combinations. The integrals were solved using \verb|SymPy| \citep{10.7717/peerj-cs.103}
+
+\subsection{Detailed Spin Restricted Coupled Cluster Energy}\label[app]{sec:app:ccd_spinrestriction}
+We begin by expanding the antisymmetrized terms in the CCD energy expression from \cref{eq:theo:Energy_CCD_explicit}
+\begin{align*}
+    \DECCD  = \frac{1}{4} \sum_{\substack{ab\\ij}} \elmASshort{ij}{ab}\amplitude{ab}{ij} = \frac{1}{8}\sum_{\substack{ab\\ij}} (\elmshort{ij}{ab} - \elmshort{ij}{ba})(\amplitude{ab}{ij}- \amplitude{ba}{ij})
+\end{align*}
+The restricted amplitudes are related to the unrestricted by
+\begin{align*}
+    \amplitude{ab}{ij} = \amplituderestrict{ab}{ij} - \amplituderestrict{ba}{ij}
+\end{align*}
+Meaning that
+\begin{align*}
+    \hspace{15px}\amplitude{ab}{ij}-\amplitude{ba}{ij} &= \pclosed{\amplituderestrict{ab}{ij}-\amplituderestrict{ba}{ij}} - \pclosed{\amplituderestrict{ba}{ij}-\amplituderestrict{ab}{ij}} \\
+    &= 2\pclosed{\amplituderestrict{ab}{ij}-\amplituderestrict{ba}{ij}}
+\end{align*}
+we insert the restricted amplitudes and expand 
+\begin{align*}
+    \DECCD &= \frac{1}{4}\sum_{\substack{ab\\ij}} (\elmshort{ij}{ab} - \elmshort{ij}{ba})(\amplituderestrict{ab}{ij}- \amplituderestrict{ba}{ij}) \\
+    &= \frac{1}{4} \sum_{\substack{ab\\ij}} \elmshort{ij}{ab}\amplituderestrict{ab}{ij} + \underbrace{\elmshort{ij}{ba}\amplituderestrict{ba}{ij}}_{C_1} - \elmshort{ij}{ba}\amplituderestrict{ab}{ij} - \underbrace{\elmshort{ij}{ab}\amplituderestrict{ba}{ij}}_{C_2}.
+\end{align*}
+Then by application of the matrix element \cref{eq:theo:matrix_elements_symmetry} and amplitude \cref{eq:met:amplitude_restricted_symmetry} symmetries, we see from the terms $C_1$ and $C_2$,
+\begin{align*}
+    C_1 &= \sum_{\substack{ab\\ij}}\elmshort{ij}{ba}\amplituderestrict{ba}{ij} = \sum_{\substack{ab\\ij}}\elmshort{ij}{ba}\amplituderestrict{ab}{ji} = \sum_{\substack{ab\\ij}}\elmshort{ji}{ab}\amplituderestrict{ab}{ji} = \sum_{\substack{ab\\ij}}\elmshort{ij}{ab}\amplituderestrict{ab}{ij} \\
+    C_2 &= \sum_{\substack{ab\\ij}} \elmshort{ij}{ab}\amplituderestrict{ba}{ij} = \sum_{\substack{ab\\ij}} \elmshort{ji}{ba}\amplituderestrict{ab}{ji} =  \sum_{\substack{ab\\ij}} \elmshort{ij}{ba}\amplituderestrict{ab}{ij}
+\end{align*}
+Inserting back into $\DECCD$ we find
+\begin{align*}
+    \DECCD  &= \frac{1}{2} \sum_{\substack{ab\\ij}}\elmshort{ij}{ab} \amplituderestrict{ab}{ij} - \elmshort{ij}{ba}\amplituderestrict{ij}{ab}
+\end{align*}
+Now we explicitly sum over the spins $\set{\sigma_A,\sigma_B,\sigma_I,\sigma_J}$ giving
+\begin{align*}
+    \sum_{\substack{ab\\ij}}\elmshort{ij}{ab} \amplituderestrict{ab}{ij} &= \sum_{\substack{AB\\IJ}}\sum_{\substack{\sigma_A \sigma_B\\\sigma_I \sigma_J}} \elmshort{IJ}{AB}\amplituderestrict{AB}{IJ} \delta_{\sigma_A \sigma_I} \delta_{\sigma_B \sigma_J} \\
+    &= \sum_{\substack{AB\\IJ}}\sum_{\substack{\sigma_A \sigma_B}} \elmshort{IJ}{AB}\amplituderestrict{AB}{IJ} = 4 \sum_{\substack{AB\\IJ}} \elmshort{IJ}{AB}\amplituderestrict{AB}{IJ} \\
+    \sum_{\substack{ab\\ij}}\elmshort{ij}{ba} \amplituderestrict{ab}{ij} &= \sum_{\substack{AB\\IJ}}\sum_{\substack{\sigma_A \sigma_B\\\sigma_I \sigma_J}} \elmshort{IJ}{BA}\amplituderestrict{AB}{IJ} \delta_{\sigma_B \sigma_I} \delta_{ \sigma_A \sigma_J} \delta_{\sigma_A \sigma_I} \delta_{ \sigma_B \sigma_J} \\
+    &= \sum_{\substack{A B\\I J}} \sum_{\substack{\sigma_A \sigma_B}} \elmshort{IJ}{BA}\amplituderestrict{AB}{IJ} \delta_{\sigma_A \sigma_B} \\
+    &= 2\sum_{\substack{A B\\I J}}  \elmshort{IJ}{BA}\amplituderestrict{AB}{IJ}
+\end{align*}
+Giving the total energy expression after spin has been summed out
+\begin{align*}
+    \DECCD  &= \frac{1}{2}\sum_{\substack{ab\\ij}} \elmshort{ij}{ab} \amplituderestrict{ab}{ij} - \elmshort{ij}{ba} \amplituderestrict{ab}{ij} \\
+    &= \sum_{\substack{AB\\IJ}} \pclosed{2 \elmshort{IJ}{AB} - \elmshort{IJ}{BA}} \amplituderestrict{AB}{IJ}
+\end{align*}

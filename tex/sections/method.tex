@@ -136,7 +136,41 @@ where we now have defined the density matrix with a factor two, reflecting the d
 \begin{align*}
     \rho_{GD} = 2\sum_i C^*_{G I} C_{D I}
 \end{align*}
-The same iterative scheme from \cref{algo:met:hartreefock} was used, with the modified HF matrix and energy evalutation.
+The same iterative scheme from \cref{algo:met:hartreefock} was used, with the modified HF matrix and energy evaluation.
+
+\subsubsection{Coupled Cluster}
+Motivated by the HF approach, we expand the antisymmetrized matrix elements. Since we additionally have antisymmetric amplitudes, we also expand these. The CCD energy from \cref{eq:theo:Energy_CCD_explicit} then becomes 
+\begin{align*}
+    \DECCD  &= \frac{1}{4} \sum_{\substack{ab\\ij}} \elmASshort{ij}{ab}\amplitude{ab}{ij} = \frac{1}{8}\sum_{\substack{ab\\ij}} (\elmshort{ij}{ab} - \elmshort{ij}{ba})(\amplitude{ab}{ij}- \amplitude{ba}{ij})
+\end{align*}
+We now defined new amplitudes where the antisymmetry is gone, but still the symmetry of the normal two body elements \cref{eq:theo:matrix_elements_symmetry} is present.
+\begin{align}
+    \amplituderestrict{ab}{ij} = \amplituderestrict{ba}{ji} = \amplituderestrict{AB}{IJ}\delta_{\sigma_{A}\sigma_{I}}\delta_{\sigma_{B}\sigma_{J}} = \amplituderestrict{BA}{JI}\delta_{\sigma_{B}\sigma_{J}}\delta_{\sigma_{A}\sigma_{I}} \label[eq]{eq:met:amplitude_restricted_symmetry}
+\end{align}
+As shown in detail in \cref{sec:app:ccd_spinrestriction}, the CCD energy can then be rewritten as
+\begin{align*}
+    \DECCD  &= \frac{1}{2}\sum_{\substack{ab\\ij}} \elmshort{ij}{ab} \amplituderestrict{ab}{ij} - \elmshort{ij}{ba} \amplituderestrict{ab}{ij} \\
+    &= \sum_{\substack{AB\\IJ}} \pclosed{2 \elmshort{IJ}{AB} - \elmshort{IJ}{BA}} \amplituderestrict{AB}{IJ}
+\end{align*}
+Similar approaches can be used to sum the spin out of \cref{eq:theo:amplitude_equation_CCD}, which is a drudging and lengthy task. Here the results from  \citep{shavitt_bartlett_2009} is presented. The result has also been calculated using \verb|Drudge|, present in the code base. Einstein summation convention is assumed
+
+\begin{align}
+    \begin{split}\label[eq]{eq:met:amplitude_equation_expanded_resricted}
+        &\elmshort{AB}{IJ} + \permoperator{(IA)(JB)} \Big[ f_{BC}\amplituderestrict{AC}{IJ} -f_{KJ}\amplituderestrict{AB}{IK} \\
+        &+ \frac{1}{2}\elmshort{AB}{CD}\amplituderestrict{CD}{IJ} + \frac{1}{2}\elmshort{KL}{IJ}\amplituderestrict{AB}{KL} + 2 \elmshort{KB}{CJ}\amplituderestrict{AC}{KI} \\
+        &-\elmshort{KB}{CJ}\amplituderestrict{AC}{KI} - \elmshort{KB}{IC}\amplituderestrict{AC}{KJ} - \elmshort{KB}{JC}\amplituderestrict{AC}{IK} \\
+        &+\elmshort{KL}{CD}\Big( \frac{1}{2}\amplituderestrict{CD}{IJ}\amplituderestrict{AB}{KL} + 2\amplituderestrict{AC}{IK}\amplituderestrict{DB}{LJ}-2\amplituderestrict{AC}{IK}\amplituderestrict{DB}{JL} \\
+        &+\frac{1}{2}\amplituderestrict{CA}{IK}\amplituderestrict{BD}{LJ}-\amplituderestrict{AD}{IK}\amplituderestrict{CB}{LJ}+\amplituderestrict{AD}{KI}\amplituderestrict{CB}{LJ} \\
+        &+\frac{1}{2}\amplituderestrict{CB}{IL}\amplituderestrict{AD}{KJ} -2\amplituderestrict{CD}{KI}\amplituderestrict{AB}{LJ}+ \amplituderestrict{CD}{IK}\amplituderestrict{AB}{LJ}\\
+        &-2\amplituderestrict{CA}{KL}\amplituderestrict{DB}{IJ}+\amplituderestrict{AC}{KL}\amplituderestrict{DB}{IJ}\Big)
+        \Big] = 0
+    \end{split}
+\end{align}
+with
+\begin{align*}
+    \permoperator{(IA)(JB)} = 1 + \permoperatorshort{IJ}\permoperatorshort{AB}
+\end{align*}
+
 \subsection{Quantum Mechanical System}
 
 \subsubsection{Helium and Beryllium}
