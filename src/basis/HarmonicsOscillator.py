@@ -5,7 +5,7 @@ from scipy.integrate import nquad
 from math import exp
 
 class HarmonicsOscillator(Basis):
-    def __init__(self, L=10, N=3, spinrestricted=True, omega=1, **kwargs):
+    def __init__(self, L=12, N=3, spinrestricted=True, omega=1, R=None, **kwargs):
         self.omega_ = omega
         self.shell_numbers_ = np.arange(1, 13)
         self.degeneracies_ = 2*self.shell_numbers_
@@ -14,6 +14,10 @@ class HarmonicsOscillator(Basis):
         super().__init__(L=L, N=N, spinrestricted=spinrestricted, **kwargs)
         assert self.degeneracy_*self.L_ in self.cummulative_Ns_, f"{self.L_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
         assert self.degeneracy_*self.N_ in self.cummulative_Ns_, f"{self.N_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
+        if R:
+            self.L_ = self.cummulative_Ns_[R-1]//self.degeneracy_
+
+        print(self.L_)
         self.make_mappings()
 
     def make_mappings(self):
