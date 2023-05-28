@@ -61,7 +61,8 @@ class CCbase(ABC):
         self.t = t
         self.deltaE = deltaE
 
-
+        return self
+    
     @abstractmethod
     def next_iteration(self, t, v, occ, vir):
         pass 
