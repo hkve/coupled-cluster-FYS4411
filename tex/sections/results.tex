@@ -3,43 +3,64 @@ The closed shell Helium and Beryllium calculations are presented in \cref{tab:re
 
 \begin{table}[H]
     \centering
-    \begin{tabular}{c|c|c|c|c|c}
-    Atom      &  $\Eref$ & CI & FCI & HF & RHF\\
-    \hline
+    \begin{tabular}{cccccc}
+    \toprule
+        Atom      &  $\Eref$ & CI & FCI & HF & RHF\\
+    \midrule
     He & -2.7500 & -2.8385 & -2.9037 & -2.8311 & -2.8311 \\
     Be & -13.7160 & -14.3621 & -14.6674 & -14.5083 & -14.5083 \\
+    \bottomrule
     \end{tabular}
     \newline
     \vspace*{10px}
     \newline
-    \begin{tabular}{c|c|c|c|c}
+    \begin{tabular}{ccccc}
+        \toprule
         Atom & CCD & RCCD & CCD(HF) & RCCD(HF) \\
-        \hline
+        \midrule
         He & -2.7516 & -2.7516 & -2.8391 & -2.8391 \\
-        Be & -13.7195 & -13.7195 & -14.5129 & -14.5129
+        Be & -13.7195 & -13.7195 & -14.5129 & -14.5129 \\
+        \bottomrule
     \end{tabular}
     \caption{Ground state energies for Helium and Beryllium in \au\hspace{2px}Calculations done with configuration interaction with both singles and no constraints (full), in addition to HF and CCD in both restricted and unrestricted schemes. }\label[tab]{tab:res:helium_and_beryllium}
 \end{table}
 
 \begin{table}[H]
     \centering
-    \begin{tabular}{c|c|c|c|c}
+    \begin{tabular}{ccccc}
+    \toprule
     Atom      &  $\Eref$ & CI  & HF & RHF\\
-    \hline
+    \midrule
     He & 5.29 & 2.25  & 2.50 & 2.50 \\
     Be & 6.49 & 2.08  & 1.09 & 1.09 \\
+    \bottomrule
     \end{tabular}
     \newline
     \vspace*{10px}
     \newline
-    \begin{tabular}{c|c|c|c|c}
+    \begin{tabular}{ccccc}
+        \toprule
         Atom & CCD & RCCD & CCD(HF) & RCCD(HF) \\
-        \hline
+        \midrule
         He & 5.24 & 5.24 & 2.22 & 2.22 \\
-        Be & 6.46 & 6.46 & 1.05 & 1.05
+        Be & 6.46 & 6.46 & 1.05 & 1.05 \\
+        \bottomrule
     \end{tabular}
     \caption{ Relative error in \% for Helium and Beryllium from \cref{tab:res:helium_and_beryllium}, using the FCI results as the exact energies. }\label[tab]{tab:res:helium_and_beryllium_percent_error}
 \end{table}
 
 \subsection{Harmonic Oscillator}
 make tables for multiple particles increasing the number of shells. Adding timing comparisons for HF v RHF and CCD v RCCD.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+    \toprule
+    R & $\omega$ & HF & CCD & CCD(HF) \\
+    \midrule
+    1 & 1.0 & 3.2533 & 3.2533 & 3.2533 \\
+    2 & 1.0 & 3.2533 & 3.1523 & 3.1523 \\
+    3 & 1.0 & 3.1627 & 3.1418 & 3.0390 \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+    
