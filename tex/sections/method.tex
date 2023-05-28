@@ -113,19 +113,30 @@ Both the HF and CCD frameworks presented here treats matrix elements including s
 \end{align*}
 only gives non-zero contributions when both the spins of $p,r$ and $q,s$ align. This reduces the number of matrix elements by a constant factor of 16, improving both storage and computation time. To make use of this however, we must rewrite our equations to use normal matrix elements, instead of antisymmetrized elements. 
 \subsubsection{Hartree-Fock}
-Taking the reference energy from the Hartree-Fock Lagrangian
+Taking the reference energy term from the HF Lagrangian, we can explicitly sum out the spin from the one and two body terms. Starting with the diagonal one body term we have
 
 \begin{align*}
-    \sum_i \hshort{i}{i} + \frac{1}{2}\sum_{ij} \elmASshort{ij}{ij} = 2\sum_I \hshort{I}{I} + \sum_{IJ} \pclosed{2\elmshort{IJ}{IJ}-\elmshort{IJ}{JI}}
+    \sum_i \hshort{i}{i} = \sum_{I\sigma_I} \hshort{I}{I}\delta_{II} = 2\sum_I \hshort{I}{I}.
 \end{align*}
-
+By expanding the antisymmetrized matrix elements, the two body term follows similarly
+\begin{align*}
+    \frac{1}{2}\sum_{ij} \elmASshort{ij}{ij} &= \frac{1}{2}\sum_{ij} \elmshort{ij}{ij} - \elmshort{ij}{ji} \\
+    &= \frac{1}{2}\sum_{IJ\sigma_I \sigma_J} \elmshort{IJ}{IJ}\delta_{\sigma_I \sigma_I}\delta_{\sigma_J \sigma_J} - \elmshort{IJ}{JI}\delta_{\sigma_I \sigma_J}\delta_{\sigma_I \sigma_J} \\
+    &= \sum_{IJ} \pclosed{2\elmshort{IJ}{IJ} -  \elmshort{IJ}{JI}}.
+\end{align*}
+The reference energy term \cref{eq:theo:e0ref} can be expressed with spin summed out as
+\begin{align*}
+    \sum_i \hshort{i}{i} + \frac{1}{2}\sum_{ij} \elmASshort{ij}{ij} = 2\sum_I \hshort{I}{I} + \sum_{IJ} \pclosed{2\elmshort{IJ}{IJ}-\elmshort{IJ}{JI}}.
+\end{align*}
+Now the same expansion in the computational basis can be performed such as in \cref{sec:theo:hartreefock} and by optimizing wrt. to the coefficients $C_{AI}$ with the orthonormality constraint, we get a similar HF matrix
 \begin{align*}
     \hamhf{AB} = h_{AB} + \sum_{G D} \rho_{GD} \elmshort{A G}{B D} - \frac{1}{2}\sum_{G D} \rho_{GD}\elmshort{AG}{DB}
 \end{align*}
-
+where we now have defined the density matrix with a factor two, reflecting the double occupancy of each (spatial) state.
 \begin{align*}
     \rho_{GD} = 2\sum_i C^*_{G I} C_{D I}
 \end{align*}
+The same iterative scheme from \cref{algo:met:hartreefock} was used, with the modified HF matrix and energy evalutation.
 \subsection{Quantum Mechanical System}
 
 \subsubsection{Helium and Beryllium}

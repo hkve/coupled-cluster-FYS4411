@@ -14,9 +14,9 @@ One and two body matrix elements are calculated using a computational basis, wit
 \end{align*}
 with $\psi_p$ being a single particle wave function, often chosen to be the eigenfunction of $\hat{h}$. Note that $p$ also contain the spin quantum number, meaning that $\dd \vec{x}$ implicitly contains a spin component. If $\hat{h}$ or $\hat{v}$ is spin \textit{independent}, this simply reduces to Kronecker deltas for the spin component. It is often convenient to use antisymmetrized matrix elements, defined as 
 \begin{align*}
-    \elmAS{pq}{rs} = \elm{pq}{rs} - \elm{pq}{sr}
+    \elmAS{pq}{rs} = \elm{pq}{rs} - \elm{pq}{sr},
 \end{align*}
-The shorthands $\hshort{p}{q} \equiv \bra{p} \hat{h} \ket{q}$, $\elmshort{pq}{rs} \equiv \elm{pq}{rs}$ and $\elmASshort{pq}{rs} \equiv \elmAS{pq}{rs}$ will often be used. Using this formulation, a general two-body operator can be constructed
+where the terms are often referred to the \textit{direct} and \textit{exchange} terms respectively. The shorthands $\hshort{p}{q} \equiv \bra{p} \hat{h} \ket{q}$, $\elmshort{pq}{rs} \equiv \elm{pq}{rs}$ and $\elmASshort{pq}{rs} \equiv \elmAS{pq}{rs}$ will often be used. Using this formulation, a general two-body operator can be constructed
 
 \begin{align}
     \ham = \sum_{pq} \hshort{p}{q}\crt{p}\ani{q} + \frac{1}{4} \sum_{pqrs} \elmASshort{pq}{rs}\crt{p}\crt{q}\ani{s}\ani{r} \label[eq]{eq:theo:second_quant_ham}
@@ -48,7 +48,7 @@ One major reason for doing this is the applicability of the \textit{Generalized 
     \hat{H}\ket{\Psi} = E \ket{\Psi} \label[eq]{eq:theo:schroding_equation}
 \end{align}
 
-\subsection{Hartree-Fock}
+\subsection{Hartree-Fock}\label[sec]{sec:theo:hartreefock}
 The Hartree-Fock method is one of the cheapest and most commonly applicated many-body methods. Using the reference energy equation \cref{eq:theo:e0ref}, we perform a basis change to the Hartree-Fock basis, based on minimizing the ansatz expectation value. Using Greek letters to index the computational basis $\alpha, \beta \ldots$, going over all states $L$ we can change to the Hartree-Fock basis using
 
 \begin{align*}
