@@ -34,8 +34,8 @@ class CCbase(ABC):
         iters = 0
         diff = 321
         deltaE = 321
-
-        while (iters < maxiters) and (diff > tol):
+        crashing = False
+        while (iters < maxiters) and (diff > tol) and not crashing:
             t_next = t*p + (1-p)*self.next_iteration(t)*epsinv 
 
             deltaE_next = self.evalute_energy_iteration(t_next, v, occ, vir)
@@ -47,13 +47,13 @@ class CCbase(ABC):
                 self.beVocal(diff, deltaE_next, deltaE, iters)
                 self.check_amplitude_symmetry(t_next)
 
-            self.check_convergence(diff, iters, deltaE_next)
+            crashing = self.check_convergence(diff, iters, deltaE_next)
             deltaE = deltaE_next
             t = t_next
             iters += 1
         
         self.has_run = True
-        if(iters < maxiters):
+        if(iters < maxiters and not crashing):
             self.converged = True
             self.final_iters = iters
             self.final_diff = diff
@@ -87,11 +87,15 @@ class CCbase(ABC):
     
     def check_convergence(self, diff, iters, deltaE):
         if diff > 1e10:
+            return True
+        else:
+            return False
+            '''
             raise ValueError(textwrap.dedent(f"""
             Non-convergence of CCD calculation.
             {iters = }, {diff =}, {deltaE =}
             """))
-    
+            '''
     def beVocal(self, diff, deltaE_next, deltaE, iters):
         print(f"{diff = :.4e}, {deltaE = :.4f}, {deltaE_next = :.4f}, {iters = }")
     
