@@ -4,20 +4,25 @@ from scipy.special import hermite, factorial
 from scipy.integrate import nquad
 from math import exp
 
+from quantum_systems import TwoDimensionalHarmonicOscillator
+from scipy import sparse
+import re
+import einops
+
 class HarmonicsOscillator(Basis):
     def __init__(self, L=12, N=3, spinrestricted=True, omega=1, R=None, **kwargs):
         self.omega_ = omega
         self.shell_numbers_ = np.arange(1, 13)
         self.degeneracies_ = 2*self.shell_numbers_
         self.cummulative_Ns_ = np.cumsum(self.degeneracies_)
+        
+        if R:
+            L = self.cummulative_Ns_[R-1]
 
         super().__init__(L=L, N=N, spinrestricted=spinrestricted, **kwargs)
         assert self.degeneracy_*self.L_ in self.cummulative_Ns_, f"{self.L_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
         assert self.degeneracy_*self.N_ in self.cummulative_Ns_, f"{self.N_ = } does not give a closed shell. Must be in {self.cummulative_Ns_}"
-        if R:
-            self.L_ = self.cummulative_Ns_[R-1]//self.degeneracy_
 
-        print(self.L_)
         self.make_mappings()
 
     def make_mappings(self):
@@ -89,7 +94,6 @@ class HarmonicsOscillator(Basis):
         return self.A(*n_p)*self.A(*n_q)*self.A(*n_r)*self.A(*n_s) * I / self.omega**(3/2)
 
     def calculate_TB(self):
-        from quantum_systems import TwoDimensionalHarmonicOscillator
         rL = self.degeneracy_*self.L_//2 # restricted L
         tdho = TwoDimensionalHarmonicOscillator(rL, 5, 11, omega=self.omega_)
         if self.spinrestricted_:
@@ -102,9 +106,33 @@ class HarmonicsOscillator(Basis):
                             self.fill_with_spin(tdho.u[i,j,k,l], i,j,k,l)
 
             self.make_AS()
-                
+
         return self
- 
+
+    def save_elements(self, filename):
+        P, Q, R, S = np.nonzero(self.v_)
+        v_nonzero = self.v_[P, Q, R, S]
+        L_saved = np.array([self.L_])
+
+        np.savez(filename, L_saved, P, Q, R, S, v_nonzero)
+
+    def load_elements(self, filename):
+        npzfile = np.load(filename)#, allow_pickle=True)
+        L_saved = npzfile["arr_0"][0]
+        
+        assert self.L_ <= L_saved, f"File {filename} you are reading from has fewer basis functions (L_read) {L_saved} than you require (L_req) {self.L_}. Calculating new ones are required"
+
+        indicies = np.c_[npzfile["arr_1"],npzfile["arr_2"],npzfile["arr_3"],npzfile["arr_4"]]
+        v_nonzero = npzfile["arr_5"]
+
+        drops = np.where(indicies >= self.L_)[0]
+        indicies = np.delete(indicies, drops, axis=0)
+        v_nonzero = np.delete(v_nonzero, drops)
+
+        P, Q, R, S = indicies.T
+
+        self.v_[P, Q, R, S] = v_nonzero
+
     def calculate_OB(self):
         """
         Calculate unperturbed matrix elements for the Harmonics Oscillator

@@ -91,13 +91,26 @@ class Basis(ABC):
     def load_elements(self, filename):
         pass
 
-    def save_TB(self, filename):
+    def save_elements(self, filename):
         pass
 
-    def load_TB(self, filename):
+    def get_setspath_filename(self, filename):
         path = pl.Path(__file__).parent / pl.Path("sets")
         path.mkdir(exist_ok=True)
         path /= pl.Path(filename)
+
+        return path
+    
+
+    def save_TB(self, filename):
+        path = self.get_setspath_filename(filename)
+
+        assert path.parent.exists(), f"No file at {str(path)}"
+        self.save_elements(path)
+
+    
+    def load_TB(self, filename):
+        path = self.get_setspath_filename(filename)
 
         assert path.exists(), f"No file at {str(path)}"
         self.load_elements(path)
