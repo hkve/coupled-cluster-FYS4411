@@ -75,13 +75,13 @@ class CCbase(ABC):
         if not self.has_run:
             raise UserWarning("Did not run?")
             return None
-        if not self.converged:
-            raise UserWarning("Did not converge :(")
-            return None
         
         E = self.deltaE
         if not correlation:
             E += self.basis.evaluate_energy()
+        if not self.converged:
+            warnings.warn("Did not converge :(")
+            E = 0
 
         return E
     
