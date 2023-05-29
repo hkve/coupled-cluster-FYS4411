@@ -98,13 +98,15 @@ class RCCD(CCbase):
         v = self.basis.v_
 
         occ, vir = self.basis.occ_, self.basis.vir_
+        f_pp_o = self.f_pp_o
+        f_hh_o = self.f_hh_o
 
         res = np.zeros_like(t)
         # Here we have a long permutation term, so we collect all sums and then perform the permutation
 
         # Fock terms, single sum
-        # res += np.einsum("bc,acij->abij", f[vir,vir], t)
-        # res += np.einsum("kj,abik->abij", f[occ,occ], t)
+        res += np.einsum("bc,acij->abij", f_pp_o, t)
+        res -= np.einsum("kj,abik->abij", f_hh_o, t)
 
         # virvir and occocc sums
         res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t, optimize=True)
