@@ -28,10 +28,10 @@ class CCD(CCbase):
 
         res += v[vir, vir, occ, occ] # v_abij
 
-        tp = np.einsum("bc,acij->abij", f_pp_o, t)
+        tp = np.einsum("bc,acij->abij", f_pp_o, t, optimize=True)
         res += (tp - tp.transpose(1,0,2,3))
 
-        tp = np.einsum("kj,abik->abij", f_hh_o, t)
+        tp = np.einsum("kj,abik->abij", f_hh_o, t, optimize=True)
         res -= (tp - tp.transpose(0,1,3,2))
 
         # Two first sums, over cd and kl
@@ -105,8 +105,8 @@ class RCCD(CCbase):
         # Here we have a long permutation term, so we collect all sums and then perform the permutation
 
         # Fock terms, single sum
-        res += np.einsum("bc,acij->abij", f_pp_o, t)
-        res -= np.einsum("kj,abik->abij", f_hh_o, t)
+        res += np.einsum("bc,acij->abij", f_pp_o, t, optimize=True)
+        res -= np.einsum("kj,abik->abij", f_hh_o, t, optimize=True)
 
         # virvir and occocc sums
         res += 0.5*np.einsum("abcd,cdij->abij", v[vir, vir, vir, vir], t, optimize=True)
