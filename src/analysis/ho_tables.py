@@ -105,7 +105,7 @@ def run_vary_R(N=2, omega=1.0, Rs = [1,2,3], p_ho={}, p_hf={}, run=False, filena
     
     def format_p(x):
         if x > 0.99:
-            return ">0.99"
+            return r"$>$0.99"
         else:
             return f"{x:.2f}"
     
@@ -154,7 +154,7 @@ if __name__ == '__main__':
         12: False,
         20: False,
     }
-    # run_machinery(omega, Ns, ps, runs)
+    run_machinery(omega, Ns, ps_ho, ps_hf, runs)
 
     # A little lower
     omega = 0.5
@@ -172,9 +172,9 @@ if __name__ == '__main__':
         20: {5: 0.2, 6: 0.2, 7: 0.999, 8: 0.999, 9: 0.999, 10: 0.999, 11: 0.999, 12: 0.999},
     }
     runs = {
-        2: True,
-        6: True,
-        12: True,
-        20: True,
+        2: False,
+        6: False,
+        12: False,
+        20: False,
     }
-    run_machinery(omega, Ns, ps_ho, ps_hf, runs)
+    # run_machinery(omega, Ns, ps_ho, ps_hf, runs)
