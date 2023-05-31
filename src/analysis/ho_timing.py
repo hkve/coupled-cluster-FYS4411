@@ -57,16 +57,17 @@ def timing(filename="timing", R_max=12, spinrestricted=False):
 def plot_timing(filename="timing"):
     hf, ccd = [0]*2, [0]*2
     shf, sccd = [0]*2, [0]*2
+    rs = [0]*2
     filename_urestriced = pl.Path(__file__).parent / pl.Path(f"data/{filename}.npz")
     filename_restriced = pl.Path(__file__).parent / pl.Path(f"data/{filename}_restricted.npz")
 
     filenames = [filename_urestriced, filename_restriced]
-    R = 0
+    
     for i in range(2):
         filename = filenames[i]
         npzfile = np.load(filename)
 
-        R = npzfile["arr_0"]
+        rs[i] = npzfile["arr_0"]
         hf_time, ccd_time = npzfile["arr_1"], npzfile["arr_2"]
 
         hf[i] = hf_time.mean(axis=0)
@@ -80,21 +81,25 @@ def plot_timing(filename="timing"):
     ccd, rccd = ccd 
     sccd, srccd = sccd
 
+    R, Rr = rs
+
     fig, ax = plt.subplots()
     ax.plot(R, hf, label="HF")
-    ax.plot(R, rhf, label="RHF")
+    ax.plot(Rr, rhf, label="RHF")
     ax.plot(R, ccd, label="CCD")
-    ax.plot(R, rccd, label="RCCD")
+    ax.plot(Rr, rccd, label="RCCD")
 
     ax.fill_between(R, hf+shf, hf-shf, alpha=0.3)
-    ax.fill_between(R, rhf+srhf, rhf-srhf, alpha=0.3)
+    ax.fill_between(Rr, rhf+srhf, rhf-srhf, alpha=0.3)
     ax.fill_between(R, ccd+sccd, ccd-sccd, alpha=0.3)
-    ax.fill_between(R, rccd+srccd, rccd-srccd, alpha=0.3)
+    ax.fill_between(Rr, rccd+srccd, rccd-srccd, alpha=0.3)
 
+    ax.set_yscale("log")
+    ax.set(xlabel="R", ylabel="T [ms]")
     ax.legend()
     plt.show()
 if __name__ == "__main__":
-    timing(spinrestricted=False, R_max = 10)
-    timing(spinrestricted=True, R_max = 12)
+    # timing(spinrestricted=False, R_max = 9)
+    # timing(spinrestricted=True, R_max = 12)
 
     plot_timing()
