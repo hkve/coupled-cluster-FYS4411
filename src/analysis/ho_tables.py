@@ -135,7 +135,13 @@ def run_machinery(omega, Ns, ps_ho, ps_hf, runs):
         calculate_matrix_elements(Rs, omega=omega, filename=filename)
         run_vary_R(N=N, omega=omega, Rs=Rs, run=runs[N], p_ho=ps_ho[N], p_hf=ps_hf[N], filename=f"{filename}.npz")
 
+def merge_dict(d1,*args):
+    for d in args:
+        d1.update(d)
+    return d1
+
 if __name__ == '__main__':
+
     # Normal frequency
     omega = 1.0
     Ns = [2,6,12,20]
@@ -154,7 +160,7 @@ if __name__ == '__main__':
         12: False,
         20: False,
     }
-    run_machinery(omega, Ns, ps_ho, ps_hf, runs)
+    # run_machinery(omega, Ns, ps_ho, ps_hf, runs)
 
     # A little lower
     omega = 0.5
@@ -178,3 +184,20 @@ if __name__ == '__main__':
         20: False,
     }
     # run_machinery(omega, Ns, ps_ho, ps_hf, runs)
+
+    # Lastly lowest. This did only converge for two particles
+    omega = 0.1
+    Ns = [2, 6]
+    ps_ho = {
+        2: merge_dict({i: 0.3 for i in range(5,10+1)}, {11: 0.5, 12: 0.5}),
+        6: {i: 0.999 for i in range(2,10+1)},
+    }
+    ps_hf = {
+        2: {12: 0.3},
+        6: {7: 0.3, 8: 0.3, 9: 0.3, 10: 0.3, 11: 0.3, 12: 0.3},
+    }
+    runs = {
+        2: False,
+        6: True,
+    }
+    run_machinery(omega, Ns, ps_ho, ps_hf, runs)
