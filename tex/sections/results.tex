@@ -50,7 +50,16 @@ The closed shell Helium and Beryllium calculations are presented in \cref{tab:re
 \end{table}
 
 \subsection{Harmonic Oscillator}
-Comparing with the analytical case of two interacting particles at $\omega = 1.0$ having an energy of $3.00$, the best results was achieved when using the 12 first shells as basis states. Here HF, CCD with HO basis and CCD with HF basis produced energies off (relative error) 3.161909 (5.397\%), 3.089302 (2.977\%) and 3.005879 (0.196\%) respectively. This gave a clear sign that the basis and algorithm implementations were set up correctly. The results from the restricted and unrestricted schemes were again identical. Due to the computational expense when using a large amount of virtual states, all other energy calculations were done in the restricted scheme.  
+Comparing with the analytical case of two interacting particles at $\omega = 1.0$ having an energy of $3.00$, the best results was achieved when using the 12 first shells as basis states. Here HF, CCD with HO basis and CCD with HF basis produced energies off (relative error) 3.161909 (5.397\%), 3.089302 (2.977\%) and 3.005879 (0.196\%) respectively. This gave a clear sign that the basis and algorithm implementations were set up correctly. The results from the restricted and unrestricted schemes were again identical.
+
+A comparison of the elapsed time for each algorithm to converge is presented in \cref{fig:res:timing}. All runs were made using $N=2$. For $R > 9$, the unrestricted implementation begun slowing down substantially.  
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figs/timing.pdf}
+    \caption{Showing elapsed time in milliseconds, comparing HF and CCD between the unrestricted and restricted schemes. $N=2$ particles were used, with time being averaged over ten runs. The shaded regions display the standard deviation over the ten runs.}\label[fig]{fig:res:timing}
+\end{figure}
+ Due to the computational expense when using a large amount of virtual states, all other energy calculations were done in the restricted scheme.  
 
 
 Increasing the number of particles in the $\omega = 1.0$ system is presented in \cref{tab:res:ho_omega1}. For 12 and 20 particles, convergence for CCD using the HO basis was troublesome. This was in contrast to the HF basis, where no tuning of the mixing parameter was required. 
