@@ -15,7 +15,16 @@ Considering the time benchmarking from \cref{fig:res:timing}, it was clear that 
 
 Better storage schemes such as matrix representations mapping $ij \rightarrow I$ and $ab \rightarrow A$ could increase computational performance, due to better usage of \verb|BLAS| functionality. This was not done however due to the main performance focus being comparing restricted to unrestricted schemes. In future work, a more systemic consideration of computational complexity would be desirable, pushing the limits on larger basis sets.
 
+
+
 \subsection{Harmonic Oscillator}
+Comparing with the analytical result for $\omega = 1.0$ and two particles, the relative error using a HO and HF basis have 2.997\% and 0.196\% respectively with $R=12$ basis states. This difference is quite more substantial compared with the Helium and Beryllium results. This indicates that the mean field approximation of the average electron-electron interaction is somewhat representative of the system. On the other hand, a simple HF calculation produced a relative error of 5.397\%, meaning that electron-electron correlations also play an important role when one wishes to describe the system more accurately. Comparing with \citep{pedersenlohneInitioComputationEnergies2011}, the same potential using $R=12$ shells as basis states yielded a relative error of $0.0218\%$. This indicates that the inclusion of singles excitations also plays an important role to achieve high precision results.
+\subsubsection{Increasing the Number of Particles}
+From the detailed $\omega = 1.0$ for 2, 6, 12 and 20 particles \cref{tab:res:ho_omega1} the energy per particle increases. For $N=2$ we have $E/N = 1.502990$, increasing to 3.367877 for $N=6$ and 5.487481 for $N=12$. The $N = 20$ case tops it off with $E/N=7.811913$, being over five times larger the  non-interacting solution of 1.5. It is clear that adding more interactive particles in the trap increases the energy due to electron-electron repulsion.
+
+Convergence using the HO basis was difficult for 12 and 20 particles. This can be explained by the true eigenstates of the interacting system deviating from the HO solution when the interaction plays a larger role. By making linear combinations of HO basis states and accounting for some electron-electron interaction by a mean field approximation, more accurate single particle eigenstates are created and thus convergence was achieved using the HF basis.
+
+\subsubsection{Turing the Frequency Down}
 Defiantly mention
 \begin{enumerate}
     \item CC not variational bad.
