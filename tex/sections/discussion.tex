@@ -20,18 +20,26 @@ Better storage schemes such as matrix representations mapping $ij \rightarrow I$
 \subsection{Harmonic Oscillator}
 Comparing with the analytical result for $\omega = 1.0$ and two particles, the relative error using a HO and HF basis have 2.997\% and 0.196\% respectively with $R=12$ basis states. This difference is quite more substantial compared with the Helium and Beryllium results. This indicates that the mean field approximation of the average electron-electron interaction is somewhat representative of the system. On the other hand, a simple HF calculation produced a relative error of 5.397\%, meaning that electron-electron correlations also play an important role when one wishes to describe the system more accurately. Comparing with \citep{pedersenlohneInitioComputationEnergies2011}, the same potential using $R=12$ shells as basis states yielded a relative error of $0.0218\%$. This indicates that the inclusion of singles excitations also plays an important role to achieve high precision results.
 \subsubsection{Increasing the Number of Particles}
-From the detailed $\omega = 1.0$ for 2, 6, 12 and 20 particles \cref{tab:res:ho_omega1} the energy per particle increases. For $N=2$ we have $E/N = 1.502990$, increasing to 3.367877 for $N=6$ and 5.487481 for $N=12$. The $N = 20$ case tops it off with $E/N=7.811913$, being over five times larger the  non-interacting solution of 1.5. It is clear that adding more interactive particles in the trap increases the energy due to electron-electron repulsion.
+From the detailed $\omega = 1.0$ for 2, 6, 12 and 20 particles \cref{tab:res:ho_omega1} the energy per particle increases. For $N=2$ we have $E/N = 1.502990$, increasing to 3.367877 for $N=6$ and 5.487481 for $N=12$, while the $N = 20$ case tops it off with $E/N=7.811913$. Comparing with the non-interacting solutions of 1.00, 1.67, 2.34 and 3.00, we move from having $\sim 150\%$ of the non-interacting solution for 2 particles to $\sim 260\%$ for 20 particles. It is clear that adding more interactive particles in the trap increases the energy due to electron-electron repulsion.
 
 Convergence using the HO basis was difficult for 12 and 20 particles. This can be explained by the true eigenstates of the interacting system deviating from the HO solution when the interaction plays a larger role. By making linear combinations of HO basis states and accounting for some electron-electron interaction by a mean field approximation, more accurate single particle eigenstates are created and thus convergence was achieved using the HF basis.
 
 \subsubsection{Turing the Frequency Down}
+The $\omega = 0.5$ results from \cref{tab:res:ho_omega0.5} yielded an energy per particle of 0.831762, 1.970973 and 3.273831 for 2, 6 and 12 particles respectively. Comparing with the non-interacting case for 0.5, we contain $\sim 160\%,\sim 240\%$ and $\sim 280\%$ of the non-interacting solution for 2, 6 and 12 particles. Thus decreasing the frequency makes the electron-electron repulsion play a bigger role than the HO trap. Making the HF basis converge is an easier job than the HO basis for the same reasons as for the $\omega = 1.0$ case, just more prevalent due to the interaction playing a bigger role. Additionally, achieving convergence for 20 particles using the HF basis also presented some problems. There are two reasons for this.
+
+Firstly CC is perturbative in nature, meaning that when the non-interacting single particle energies moves closer and closer (since the frequency decreases), we move towards an almost degenerate state. As seen in \cref{eq:met:amplitudes_update_rule}, we divide by the diagonal Fock matrix, where the main contribution is the single particle energies. When  $\epsilon_a + \epsilon_b - \epsilon_i - \epsilon_j \rightarrow 0$, the new amplitude contribution will be inflated. This can be counteracted by turning up the mixing parameter $p$, but this might yield slow or no convergence of the amplitudes.
+
+Secondly for low frequencies, the electron-electron repulsion be so large that the HO trap is not strong enough to contain the particles, such that we actually have an unbound system. For an unbound system, the HO solutions are not the correct basis states despite showing much of the same sinusoidal behavior as the free particle.   
+
+These effects are even more prevalent for the $\omega = 0.1$ system \cref{tab:res:ho_omega0.1}, where convergence was only possible for 2 and 6 particles. Here the system is suspected to be unbound when filling the $R=3$ shell completely.
+
 Defiantly mention
 \begin{enumerate}
     \item CC not variational bad.
     \item HF basis good
-    \item Hydrogen $l \neq 0$ difficult.
-    \item Lower frequencies harder for convergence.
-    \item Not having singles when comparing to article
+    \item \st{Hydrogen $l \neq 0$ difficult.}
+    \item \st{Lower frequencies harder for convergence.}
+    \item \st{Not having singles when comparing to article}
     \item How much does energy improve from ref to HF compared to HF to CCD
 \end{enumerate} 
 
