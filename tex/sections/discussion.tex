@@ -1,3 +1,21 @@
+\subsection{Helium and Beryllium}
+The Helium and Beryllium calculations were presented in \cref{tab:res:helium_and_beryllium}. Comparing with the FCI calculated the values, we see from the relative error \cref{tab:res:helium_and_beryllium_percent_error} that performing a CCD calculation using either the Hydrogen basis or HF basis improved over the reference energy in each scheme. Comparing CI with HF, we see that CI performed better for Helium while HF actually performing substantially better for Beryllium. CCD using the HF basis did beat both CI and HF in both cases, however the margins were not enormous.
+
+The Hylleraas result \citep{hylleraasNumerischeBerechnung2STerme1930} was $-79.005 \text{ eV}$ or $-2.903$ in atomic units is however much more precise. Inclusion of larger parts of the space, such as considering CISD as CCSD would improve results. Small basis sets such as this could serve as a good benchmarking system going forwards with the more complex solvers.
+
+One could of course also expand the space, including more and more $s$-orbitals. There is however a quite limiting basis when only $l=0$ basis states are included. Lifting the $l = 0$ was explored in this work, however difficulties trough  angular integrands arose, such as
+
+\begin{align*}
+    \frac{|\sphericalharmonic{m_1}{l_1}(\theta_1,\phi_1)|^2|\sphericalharmonic{m_2}{l_2}(\theta_2,\phi_2)|^2}{\sqrt{r_1^2 + r_2 ^2 - 2r_1 r_2 \cos \theta_2 }}.
+\end{align*}
+Further investigation into integration techniques concerning spherical harmonics would be required. The algebraic solver \verb|SymPy| did require a lot of `hand holding` in terms of the $s$-integrals, and presumably this would also be the case when considering less trivial angular integrals. Using one of the many Slater-type orbitals (STOs) or Gaussian-type orbitals (GTOs) is commonly the preferred method in the literature, having closed form recursion relation and being well documented. The problem of $l \neq 0$ integrals might be one of the reasons why Hydrogen-like orbitals are not as prevalent, despite being physically motivated for smaller atoms.  
+
+\subsection{Performance}
+Considering the time benchmarking from \cref{fig:res:timing}, it was clear that the restricted implementations were a worthwhile task. For $R > 9$, the unrestricted CCD had a quite large gap in performance. This could be due to the $\mathcal{O}(M^4 N^2)$ scaling from \cref{eq:met:term_to_be_optimized}, however another hypothesis is the memory usage. In the naive storage scheme where $\elmASshort{pq}{rs}$ needs to store $L^4$ elements, $R = 10$ would 
+
+Better storage schemes such as matrix representations mapping $ij \rightarrow I$ and $ab \rightarrow A$ could increase computational performance, due to better usage of \verb|BLAS| functionality. This was not done however due to the main performance focus being comparing restricted to unrestricted schemes. In future work, a more systemic consideration of computational complexity would be desirable, pushing the limits on larger basis sets.
+
+\subsection{Harmonic Oscillator}
 Defiantly mention
 \begin{enumerate}
     \item CC not variational bad.
