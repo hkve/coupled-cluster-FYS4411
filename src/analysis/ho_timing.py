@@ -84,19 +84,20 @@ def plot_timing(filename="timing"):
     R, Rr = rs
 
     fig, ax = plt.subplots()
-    ax.plot(R, hf, label="HF")
-    ax.plot(Rr, rhf, label="RHF")
-    ax.plot(R, ccd, label="CCD")
-    ax.plot(Rr, rccd, label="RCCD")
+    ax.plot(R, hf, label="HF", marker="o", ms=4)
+    ax.plot(R, ccd, label="CCD", marker="s", ms=4)
+    ax.plot(Rr, rhf, label="RHF", marker="o", ms=4)
+    ax.plot(Rr, rccd, label="RCCD", marker="s", ms=4)
 
     ax.fill_between(R, hf+shf, hf-shf, alpha=0.3)
-    ax.fill_between(Rr, rhf+srhf, rhf-srhf, alpha=0.3)
     ax.fill_between(R, ccd+sccd, ccd-sccd, alpha=0.3)
+    ax.fill_between(Rr, rhf+srhf, rhf-srhf, alpha=0.3)
     ax.fill_between(Rr, rccd+srccd, rccd-srccd, alpha=0.3)
 
     ax.set_yscale("log")
-    ax.set(xlabel="R", ylabel="T [ms]")
+    ax.set(xlabel="R", ylabel="Time [ms]")
     ax.legend()
+    pu.save("timing")
     plt.show()
 if __name__ == "__main__":
     # timing(spinrestricted=False, R_max = 9)

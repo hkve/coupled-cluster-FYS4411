@@ -117,6 +117,7 @@ def run_vary_R(N=2, omega=1.0, Rs = [1,2,3], p_ho={}, p_hf={}, run=False, filena
         df["$p(HF)$"] = df["$p(HF)$"].apply(format_p)
         extra_cols += 1
 
+    # df["CCD(HF)"] = df["CCD(HF)"]/N
     df = df.style.hide(axis="index").format(precision=6)
 
     coulmn_format = "cccc" + "c"*extra_cols
@@ -160,8 +161,8 @@ if __name__ == '__main__':
         12: False,
         20: False,
     }
-    # run_machinery(omega, Ns, ps_ho, ps_hf, runs)
-
+    run_machinery(omega, Ns, ps_ho, ps_hf, runs)
+    exit()
     # A little lower
     omega = 0.5
     Ns = [2,6,12,20]
