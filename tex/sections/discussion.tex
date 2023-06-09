@@ -1,7 +1,7 @@
 \subsection{Helium and Beryllium}
 The Helium and Beryllium calculations were presented in \cref{tab:res:helium_and_beryllium}. Comparing with the FCI calculated the values, we see from the relative error \cref{tab:res:helium_and_beryllium_percent_error} that performing a CCD calculation using either the Hydrogen basis or HF basis improved over the reference energy in each scheme. Comparing CI with HF, we see that CI performed better for Helium while HF actually performing substantially better for Beryllium. CCD using the HF basis did beat both CI and HF in both cases, however the margins were not enormous.
 
-The Hylleraas result \citep{hylleraasNumerischeBerechnung2STerme1930} was $-79.005 \text{ eV}$ or $-2.903$ in atomic units is however much more precise. Inclusion of larger parts of the space, such as considering CISD as CCSD would improve results. Small basis sets such as this could serve as a good benchmarking system going forwards with the more complex solvers.
+The Hylleraas result \citep{hylleraasNumerischeBerechnung2STerme1930} was $-79.005 \text{ eV}$ or $-2.903$ in atomic units is however much more precise. Inclusion of larger parts of the space, such as considering CISD and CCSD would improve results. Small basis sets such as this could serve as a good benchmarking system going forwards with the more complex solvers.
 
 One could of course also expand the space, including more and more $s$-orbitals. There is however a quite limiting basis when only $l=0$ basis states are included. Lifting the $l = 0$ was explored in this work, however difficulties trough  angular integrands arose, such as
 
@@ -32,15 +32,3 @@ Firstly CC is perturbative in nature, meaning that when the non-interacting sing
 Secondly for low frequencies, the electron-electron repulsion be so large that the HO trap is not strong enough to contain the particles, such that we actually have an unbound system. For an unbound system, the HO solutions are not the correct basis states despite showing much of the same sinusoidal behavior as the free particle.   
 
 These effects are even more prevalent for the $\omega = 0.1$ system \cref{tab:res:ho_omega0.1}, where convergence was only possible for 2 and 6 particles. Here the system is suspected to be unbound when filling the $R=3$ shell completely.
-
-Defiantly mention
-\begin{enumerate}
-    \item CC not variational bad.
-    \item HF basis good
-    \item \st{Hydrogen $l \neq 0$ difficult.}
-    \item \st{Lower frequencies harder for convergence.}
-    \item \st{Not having singles when comparing to article}
-    \item How much does energy improve from ref to HF compared to HF to CCD
-\end{enumerate} 
-
-
