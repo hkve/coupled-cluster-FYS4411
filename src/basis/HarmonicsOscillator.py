@@ -10,7 +10,7 @@ import re
 import einops
 
 class HarmonicsOscillator(Basis):
-    def __init__(self, L=12, N=3, spinrestricted=True, omega=1, R=None, **kwargs):
+    def __init__(self, L=12, N=3, spinrestricted=True, omega=1.0, R=None, **kwargs):
         self.omega_ = omega
         self.shell_numbers_ = np.arange(1, 13)
         self.degeneracies_ = 2*self.shell_numbers_
@@ -145,6 +145,17 @@ class HarmonicsOscillator(Basis):
             self.h_[i,i] = self.omega_*(self.shell_numbers_[k])
 
         return self
+    
+    def change_frequency(self, omega):
+        old_omega = self.omega_
+        new_omega = omega
+
+        assert new_omega > 0.01, f"Lower threshold for omega at 0.01"
+        self.h_ *= new_omega/old_omega
+        self.v_ *= np.sqrt(new_omega/old_omega)
+        self.omega_ = new_omega
+
+
 if __name__ == '__main__':
     ho = HarmonicsOscillator(L = 156, N=12, spinrestricted=True)
 
