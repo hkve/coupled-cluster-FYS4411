@@ -150,7 +150,7 @@ class HarmonicsOscillator(Basis):
         old_omega = self.omega_
         new_omega = omega
 
-        assert new_omega > 0.01, f"Lower threshold for omega at 0.01"
+        assert new_omega > 0, f"Lower threshold for omega at 0"
         self.h_ *= new_omega/old_omega
         self.v_ *= np.sqrt(new_omega/old_omega)
         self.omega_ = new_omega
