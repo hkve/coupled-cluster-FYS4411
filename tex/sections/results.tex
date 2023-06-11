@@ -64,12 +64,27 @@ Due to the computational expense when using a large amount of virtual states, al
 Lowering the frequency to $\omega = 0.5$, we show the same particle systems in \cref{tab:res:ho_omega0.5}. The convergence troubles still stood for the HO basis, but begun for smaller systems with a smaller number of virtual basis states. Here the 20 particle case also required tuning the mixing parameter for the HF basis, with $R > 7$ not achieving convergence with the parameters tested.
 Lastly lowering the frequency all the way down to $\omega = 0.1$, the 2 and 6 particle systems are presented in \cref{tab:res:ho_omega0.1}. Using 12 and 20 particles did not result in any convergence and are therefor not shown.
 
-Since convergence trouble with lower frequency and more particles was experienced, this was investigated further in \cref{fig:res:varying_omega}. Here the ground state energy over the non-interacting energy is drawn as a function of $\omega$. Here the realms of non-convergence is clearer, especially for $20$ particles.
+Since convergence trouble with lower frequency and more particles was experienced, a more fine-grained $\omega$ search is shown in \cref{fig:res:varying_omega}. Here the ground state energy over the non-interacting energy is drawn as a function of $\omega$. Here the realms of non-convergence is clearer, especially for $20$ particles. 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figs/vary_omega.pdf}
-    \caption{Showing the ground state energy calculated using CCD ($E_{\text{CCD}}$) over the non-interacting solution ($E_{\text{NI}}$) as a function of $\omega$ for $N= 2, 6, 12$ and 20 particles. The lines stop when convergence could no longer be achieved.}\label[fig]{fig:res:varying_omega}
+    \caption{Showing the ground state energy calculated using CCD ($E_{\text{CCD}}$) over the non-interacting solution ($E_{\text{NI}}$) as a function of $\omega \in [0.01,1]$ for $N= 2, 6, 12$ and 20 particles. The lines stop when convergence could no longer be achieved. All systems has been calculated with a HF basis.}\label[fig]{fig:res:varying_omega}
 \end{figure}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccc}
+        \toprule
+        $N$ & $\omega_c$ & $E_{\text{CCD}}/E_{\text{NI}} [\%]$ \\
+        \midrule
+        2 & - & - \\
+        6 & 0.0621 & 410 \\
+        12 & 0.4747 & 284 \\
+        20 & 0.9878 & 261 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Showing the lowest frequency where convergence was achieved $\omega_c$ for $N = 2, 6, 12$ and 20 particles. Additionally, the calculated CCD energy as a ratio of the non-interactive energy is shown. Frequencies were calculated for $\omega \in [0.01,1]$, where no convergence trouble was present for $N = 2$. The HF basis has been used.}\label[tab]{tab:res:omega_critical}
+\end{table}
 \clearpage
 % omega = 1.0 tables
 \begin{table*}
