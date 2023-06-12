@@ -12,7 +12,10 @@ def p_picker(omega, N):
 
     if N in [2, 6] and omega <= 0.1:
         p = 0.5
-    
+
+    if N == 6 and omega <= 0.3:
+        p = 0.3
+
     if N == 12 and omega <= 0.4:
         p = 0.5
     
@@ -23,8 +26,8 @@ def p_picker(omega, N):
 
 
 def run_vary_omega(N=2, R=12, calculate=False):
-    n_omega = 50
-    omegas = np.linspace(1,0.9, n_omega)
+    n_omega = 20
+    omegas = np.linspace(1,0.01, n_omega)
     ho = HarmonicsOscillator(R=R, N=N, spinrestricted=True)
     ho.calculate_OB()
     if calculate:
@@ -61,7 +64,6 @@ def run_vary_omega(N=2, R=12, calculate=False):
 
 def plot_vary_omega(filename="vary_omega", run=True):
     Ns = [2, 6, 12, 20]
-
     path = pl.Path(__file__).parent / pl.Path(f"data")
 
 
@@ -85,6 +87,9 @@ def plot_vary_omega(filename="vary_omega", run=True):
         else:
             omega, ratio = data[N]["omega"], data[N]["ratio"]
 
+        conv_idx = np.nanargmax(ratio)
+        perc = ratio[conv_idx]*100
+        print(f"Last convergence {N = }, {omega[conv_idx]:.4f}, {perc:.2f} %")
         ax.plot(omega, ratio, label=f"{N = }")
 
     ax.set(xlabel=r"$\omega$", ylabel="$E_{CCD}/E_{NI}$")

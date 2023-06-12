@@ -507,3 +507,6 @@ sandkasse/
 .vscode/ltex.dictionary.en-US.txt
 src/.vscode
 tex/.vscode
+tex/main.pdf
+*.pyz
+src/basis/sets/*
