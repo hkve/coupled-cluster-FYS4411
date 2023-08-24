@@ -1,7 +1,7 @@
 import numpy as np
 from .CCbase import CCbase
-from .rhs_amplitudes import amplitudes_ccd
-from .rhs_amplitudes_restricted import amplitudes_ccd_restricted
+from .rhs.t_CCD import amplitudes_ccd
+from .rhs.t_RCCD import amplitudes_ccd_restricted
 
 class CCD(CCbase):
     def __init__(self, basis, **kwargs):

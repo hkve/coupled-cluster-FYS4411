@@ -1,6 +1,6 @@
 from ..basis.HarmonicsOscillator import HarmonicsOscillator
 from ..HF.HF import HF, RHF
-from ..CC.CCD import CCD
+from ..CC.CCD import CCD, RCCD
 from ..CC.fastCCD import fastCCD
 
 import numpy as np
@@ -33,7 +33,7 @@ ccd = CCD(ho).run()
 t = end(start)
 print(f"CCD {t = } ms")
 
-print(ccd.evaluate_energy())
+print(ccd.evaluate_energy(), t)
 
 start = time.time_ns()
 ccd = fastCCD(ho).run()
