@@ -7,19 +7,19 @@ from abc import ABC, abstractmethod
 
 class CCbase(ABC):
     def __init__(self, basis, **kwargs): 
-        self.basis = basis
-        self.has_run = False
-        self.converged = False
+        self._basis = basis
+        self._has_run = False
+        self._converged = False
 
         self._M = basis.L_ - basis.N_
         self._N = basis.N_
-        self.deltaE = None
+        self._deltaE = None
         self._orders = []
 
     def run(self, tol=1e-5, maxiters=100, p=0, vocal=False):
-        basis = self.basis
+        basis = self._basis
         v = basis.v_
-        occ, vir = self.basis.occ_, self.basis.vir_
+        occ, vir = self._basis.occ_, self._basis.vir_
 
         N, M = self._N, self._M
 
@@ -44,22 +44,22 @@ class CCbase(ABC):
             self.check_MP2_first_iter(iters, p, deltaE_next, v, occ, vir, epsinvs)
 
             if vocal:
-                self.beVocal(diff, deltaE_next, deltaE, iters)
-                self.check_amplitude_symmetry(t_amplitudes_next)
+                self._beVocal(diff, deltaE_next, deltaE, iters)
+                self._check_amplitude_symmetry(t_amplitudes_next)
 
-            crashing = self.check_convergence(diff, iters, deltaE_next)
+            crashing = self._check_convergence(diff, iters, deltaE_next)
             deltaE = deltaE_next
             t_amplitudes = t_amplitudes_next
             iters += 1
         
-        self.has_run = True
+        self._has_run = True
         if(iters < maxiters and not crashing):
-            self.converged = True
+            self._converged = True
             self.final_iters = iters
             self.final_diff = diff
 
         self.t_amplitudes = t_amplitudes_next
-        self.deltaE = deltaE
+        self._deltaE = deltaE
 
         return self
     
@@ -90,8 +90,8 @@ class CCbase(ABC):
     def _get_epsinvs(self):
         N, M = self._N, self._M
 
-        eps_v = np.diag(self.f)[N:]
-        eps_o = np.diag(self.f)[:N]
+        eps_v = np.diag(self._f)[N:]
+        eps_o = np.diag(self._f)[:N]
         orders = self._orders
 
         epsinvs = {}
@@ -108,20 +108,20 @@ class CCbase(ABC):
         return epsinvs   
 
     def evaluate_energy(self, correlation=False):
-        if not self.has_run:
+        if not self._has_run:
             raise UserWarning("Did not run?")
             return None
         
-        E = self.deltaE
+        E = self._deltaE
         if not correlation:
-            E += self.basis.evaluate_energy()
-        if not self.converged:
+            E += self._basis.evaluate_energy()
+        if not self._converged:
             warnings.warn("Did not converge :(")
             E = 0
 
         return E
     
-    def check_convergence(self, diff, iters, deltaE):
+    def _check_convergence(self, diff, iters, deltaE):
         if diff > 1e10:
             return True
         else:
@@ -132,38 +132,38 @@ class CCbase(ABC):
             {iters = }, {diff =}, {deltaE =}
             """))
             '''
-    def beVocal(self, diff, deltaE_next, deltaE, iters):
+    def _beVocal(self, diff, deltaE_next, deltaE, iters):
         print(f"{diff = :.4e}, {deltaE = :.4f}, {deltaE_next = :.4f}, {iters = }")
     
     def check_MP2_first_iter(self, iters, p, E_CCD0, v, occ, vir, epsinv):
         if iters == 0:
             warnings.warn("This scheme does not implement MP2 energy check after first iteration")
 
-    def check_amplitude_symmetry(self, ts):
+    def _check_amplitude_symmetry(self, ts):
         warnings.warn("This scheme does not implement amplitude symmetry check")
 
     def __str__(self):
-        if not self.has_run:
+        if not self._has_run:
             return textwrap.dedent(f"""
                 -------------------------------------------
                 No CCD calculation has been run.
                 Currently using:
-                    L = {self.basis.L_} basis functions
-                    N = {self.basis.N_} occupied functions
-                    Spinrestricted? {self.basis.spinrestricted_}
+                    L = {self._basis.L_} basis functions
+                    N = {self._basis.N_} occupied functions
+                    Spinrestricted? {self._basis.spinrestricted_}
                 -------------------------------------------
             """)
         return textwrap.dedent(f"""
             -----------------------------------------
             Results from CCD calculation
-                dE = {self.deltaE} correlation energy
-                converged? {self.converged}
+                dE = {self._deltaE} correlation energy
+                converged? {self._converged}
                 iters = {self.final_iters} used
                 diff = {self.final_diff} at convergence 
             
             Used:
-                L = {self.basis.L_} basis functions
-                N = {self.basis.N_} occupied functions
-                Spinrestricted? {self.basis.spinrestricted_}
+                L = {self._basis.L_} basis functions
+                N = {self._basis.N_} occupied functions
+                Spinrestricted? {self._basis.spinrestricted_}
             -----------------------------------------
         """)

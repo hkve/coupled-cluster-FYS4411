@@ -11,18 +11,18 @@ class CCD(CCbase):
         
         self._orders = ["D"]
 
-        self.f = basis.h + np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_])
+        self._f = basis.h + np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_])
         
         occ, vir = basis.occ_, basis.vir_
-        self.f_pp_o = self.f[vir,vir].copy()
-        self.f_hh_o = self.f[occ,occ].copy()
+        self.f_pp_o = self._f[vir,vir].copy()
+        self.f_hh_o = self._f[occ,occ].copy()
         np.fill_diagonal(self.f_pp_o, 0)
         np.fill_diagonal(self.f_hh_o, 0)
 
 
     def next_iteration(self, t_amplitudes, epsinvs):
-        v = self.basis.v_
-        occ, vir = self.basis.occ_, self.basis.vir_
+        v = self._basis.v_
+        occ, vir = self._basis.occ_, self._basis.vir_
 
         f_pp_o = self.f_pp_o
         f_hh_o = self.f_hh_o
@@ -56,11 +56,11 @@ class RCCD(CCbase):
 
         D = np.einsum("piqi->pq", basis.v[:, basis.occ_, :, basis.occ_], optimize=True)
         E = np.einsum("piiq->pq", basis.v[:, basis.occ_, basis.occ_, :], optimize=True)
-        self.f = basis.h + 2*D - E
+        self._f = basis.h + 2*D - E
 
         occ, vir = basis.occ_, basis.vir_
-        self.f_pp_o = self.f[vir,vir].copy()
-        self.f_hh_o = self.f[occ,occ].copy()
+        self.f_pp_o = self._f[vir,vir].copy()
+        self.f_hh_o = self._f[occ,occ].copy()
         np.fill_diagonal(self.f_pp_o, 0)
         np.fill_diagonal(self.f_hh_o, 0)
 
@@ -73,9 +73,9 @@ class RCCD(CCbase):
         return 2*D - E
 
     def next_iteration(self, t_amplitudes, epsinvs):
-        v = self.basis.v_
+        v = self._basis.v_
 
-        occ, vir = self.basis.occ_, self.basis.vir_
+        occ, vir = self._basis.occ_, self._basis.vir_
         f_pp_o = self.f_pp_o
         f_hh_o = self.f_hh_o
 

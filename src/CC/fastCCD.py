@@ -9,16 +9,16 @@ class fastCCD(CCD):
         super().__init__(basis, **kwargs)
 
     def next_iteration(self, t_amplitudes, epsinvs):
-        f = self.f
+        f = self._f
 
         f_pp_o = self.f_pp_o
         f_hh_o = self.f_hh_o
 
-        u = self.basis.v_
-        o, v = self.basis.occ_, self.basis.vir_
+        u = self._basis.v_
+        o, v = self._basis.occ_, self._basis.vir_
 
-        M = self.basis.L_ - self.basis.N_
-        N = self.basis.N_
+        M = self._basis.L_ - self._basis.N_
+        N = self._basis.N_
         
         t2, epsinv2 = t_amplitudes["D"], epsinvs["D"]
         t2_next = amplitudes_intermediates_ccd(t2, u, f_pp_o, f_hh_o, v, o)
@@ -30,10 +30,10 @@ class fastRCCD(RCCD):
         super().__init__(basis, **kwargs)
         
     def next_iteration(self, t):
-        f = self.f
-        v = self.basis.v_
+        f = self._f
+        v = self._basis.v_
 
-        occ, vir = self.basis.occ_, self.basis.vir_
+        occ, vir = self._basis.occ_, self._basis.vir_
 
         res = np.zeros_like(t)
 
