@@ -11,45 +11,45 @@ class CCbase(ABC):
         self.has_run = False
         self.converged = False
 
+        self._M = basis.L_ - basis.N_
+        self._N = basis.N_
         self.deltaE = None
+        self._orders = []
 
     def run(self, tol=1e-5, maxiters=100, p=0, vocal=False):
         basis = self.basis
         v = basis.v_
         occ, vir = self.basis.occ_, self.basis.vir_
 
-        vir_range = basis.L_ - basis.N_
-        occ_range = basis.N_
+        N, M = self._N, self._M
 
-        t = np.zeros(shape=(vir_range, vir_range, occ_range, occ_range))
-
-        eps_v = np.diag(self.f)[occ_range:]
-        eps_o = np.diag(self.f)[:occ_range]
-
-        eps = -eps_v[:,None,None,None] - eps_v[None,:,None,None] \
-               +eps_o[None,None,:,None] + eps_o[None,None,None,:]
-
-        epsinv = 1/eps
+        # Store amplitdue based on which orders to include
+        t_amplitudes = self._get_t_amplitudes()
+        epsinvs = self._get_epsinvs()
 
         iters = 0
         diff = 321
         deltaE = 321
         crashing = False
         while (iters < maxiters) and (diff > tol) and not crashing:
-            t_next = t*p + (1-p)*self.next_iteration(t)*epsinv 
+            t_amplitudes_next = self.next_iteration(t_amplitudes, epsinvs)
+            # t_next = t*p + (1-p)*self.next_iteration(t)*epsinv
 
-            deltaE_next = self.evalute_energy_iteration(t_next, v, occ, vir)
+            for order in self._orders:
+                t_amplitudes_next[order] = t_amplitudes[order]*p + (1-p)*t_amplitudes_next[order]
+
+            deltaE_next = self.evalute_energy_iteration(t_amplitudes_next, v, occ, vir)
             diff = np.abs(deltaE_next - deltaE)
             
-            self.check_MP2_first_iter(iters, p, deltaE_next, v, occ, vir, epsinv)
+            self.check_MP2_first_iter(iters, p, deltaE_next, v, occ, vir, epsinvs)
 
             if vocal:
                 self.beVocal(diff, deltaE_next, deltaE, iters)
-                self.check_amplitude_symmetry(t_next)
+                self.check_amplitude_symmetry(t_amplitudes_next)
 
             crashing = self.check_convergence(diff, iters, deltaE_next)
             deltaE = deltaE_next
-            t = t_next
+            t_amplitudes = t_amplitudes_next
             iters += 1
         
         self.has_run = True
@@ -58,7 +58,7 @@ class CCbase(ABC):
             self.final_iters = iters
             self.final_diff = diff
 
-        self.t = t
+        self.t_amplitudes = t_amplitudes_next
         self.deltaE = deltaE
 
         return self
@@ -70,6 +70,42 @@ class CCbase(ABC):
     @abstractmethod
     def evalute_energy_iteration(self, t, v, occ, vir):
         pass
+
+    @abstractmethod
+    def _get_t_amplitudes(self):
+        pass
+
+    def _get_t_amplitudes(self):
+        N, M = self._N, self._M
+        mapping = {"S": 1, "D": 2}
+
+        t_amplitudes = {}
+        for order in self._orders:
+            shape = tuple([M]*mapping[order] + [N]*mapping[order])
+            t_amplitudes[order] = np.zeros(shape=shape)
+
+        return t_amplitudes
+    
+
+    def _get_epsinvs(self):
+        N, M = self._N, self._M
+
+        eps_v = np.diag(self.f)[N:]
+        eps_o = np.diag(self.f)[:N]
+        orders = self._orders
+
+        epsinvs = {}
+        if "S" in orders:
+            eps = -eps_v[:,None] +eps_o[:,None]
+            assert eps.shape == (M, N), "Error in singles sp energies"
+            epsinvs["S"] = 1/eps
+        if "D" in orders:
+            eps = -eps_v[:,None,None,None] - eps_v[None,:,None,None] \
+               +eps_o[None,None,:,None] + eps_o[None,None,None,:]
+            assert eps.shape == (M, M, N, N), "Error in doubles sp energies"
+            epsinvs["D"] = 1/eps
+
+        return epsinvs   
 
     def evaluate_energy(self, correlation=False):
         if not self.has_run:
@@ -103,7 +139,7 @@ class CCbase(ABC):
         if iters == 0:
             warnings.warn("This scheme does not implement MP2 energy check after first iteration")
 
-    def check_amplitude_symmetry(self, t):
+    def check_amplitude_symmetry(self, ts):
         warnings.warn("This scheme does not implement amplitude symmetry check")
 
     def __str__(self):
