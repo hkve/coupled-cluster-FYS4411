@@ -14,6 +14,7 @@ import time
 
 N, R = 2, 7
 vocal = False
+tol = 1e-8
 
 def end(start):
     elapsed = time.time_ns() - start
@@ -47,7 +48,7 @@ ho = hf.perform_basis_change(ho)
 # print(ccd.evaluate_energy())
 
 start = time.time_ns()
-ccsd = CCSD(ho).run(vocal=vocal)
+ccsd = CCSD(ho).run(vocal=vocal, tol=tol)
 t = end(start)
 print("")
 print(f"CCSD {t = } ms")
@@ -55,7 +56,7 @@ print(f"CCSD {ccsd.evaluate_energy()}")
 print("")
 
 start = time.time_ns()
-ccsd = fastCCSD(ho).run(vocal=vocal)
+ccsd = fastCCSD(ho).run(vocal=vocal, tol=tol)
 t = end(start)
 
 print("")
@@ -75,6 +76,10 @@ sys = GeneralOrbitalSystem(n=N, basis_set=basis)
 
 start = time.time_ns()
 meth = CCHyQD.CCSD(sys, verbose=vocal, mixer=AlphaMixer)
+t_kwargs = dict(tol=tol, theta=0)
+l_kwargs = dict(tol=tol, theta=0)
+
+meth.compute_ground_state()
 E_HyQD = meth.compute_energy()
 t = end(start)
 print("")
