@@ -12,7 +12,8 @@ import pathlib as pl
 import pandas as pd
 import time
 
-N, R = 6, 7
+N, R = 2, 7
+vocal = False
 
 def end(start):
     elapsed = time.time_ns() - start
@@ -46,18 +47,24 @@ ho = hf.perform_basis_change(ho)
 # print(ccd.evaluate_energy())
 
 start = time.time_ns()
-ccsd = CCSD(ho).run(vocal=True)
+ccsd = CCSD(ho).run(vocal=vocal)
 t = end(start)
+print("")
 print(f"CCSD {t = } ms")
-print(ccsd.evaluate_energy())
+print(f"CCSD {ccsd.evaluate_energy()}")
+print("")
 
 start = time.time_ns()
-ccsd = fastCCSD(ho).run(vocal=True)
+ccsd = fastCCSD(ho).run(vocal=vocal)
 t = end(start)
-print(f"fastCCSD {t = } ms")
-print(ccsd.evaluate_energy())
 
-from coupled_cluster.ccsd import CCSD
+print("")
+print(f"fastCCSD {t = } ms")
+print(f"fastCCSD {ccsd.evaluate_energy()}")
+print("")
+
+import coupled_cluster.ccsd as CCHyQD
+from coupled_cluster.mix import AlphaMixer, DIIS
 from quantum_systems import GeneralOrbitalSystem, BasisSet
 
 basis = BasisSet(l=ho.L_, dim=3, anti_symmetrized_u=True, includes_spin=True)
@@ -66,5 +73,14 @@ basis.u = ho.v
 
 sys = GeneralOrbitalSystem(n=N, basis_set=basis)
 
-meth = CCSD(sys, verbose=True)
-print(f"HyQD CCSD = {meth.compute_energy()}")
+start = time.time_ns()
+meth = CCHyQD.CCSD(sys, verbose=vocal, mixer=AlphaMixer)
+E_HyQD = meth.compute_energy()
+t = end(start)
+print("")
+print(f"HyQD CCSD {t = } ms")
+print(f"HyQD CCSD = {E_HyQD}")
+print("")
+
+from IPython import embed
+embed()
