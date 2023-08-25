@@ -1,10 +1,10 @@
 import numpy as np
-from .CCbase import CCbase
-from .rhs.t_CCSD import amplitudes_CCSD_t1, amplitudes_CCSD_t2
+from .CCSD import CCSD
+from .rhs.t_inter_CCSD import amplitudes_CCSD_t1_t2
 
 import numpy as np
 
-class CCSD(CCbase):
+class fastCCSD(CCSD):
     def __init__(self, basis, **kwargs):
         super().__init__(basis, **kwargs)
 
@@ -28,8 +28,9 @@ class CCSD(CCbase):
         t1, epsinv1 = t_amplitudes["S"], epsinvs["S"]
         t2, epsinv2 = t_amplitudes["D"], epsinvs["D"]
 
-        t1_next = amplitudes_CCSD_t1(t1, t2, u, f, v, o)*epsinv1
-        t2_next = amplitudes_CCSD_t2(t1, t2, u, f, v, o)*epsinv2
+        t1_next, t2_next = amplitudes_CCSD_t1_t2(t1, t2, u, f, v, o) 
+        t1_next = t1_next*epsinv1
+        t2_next = t2_next*epsinv2
 
         return {"S": t1_next, "D": t2_next}
 

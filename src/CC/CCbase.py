@@ -55,8 +55,8 @@ class CCbase(ABC):
         self._has_run = True
         if(iters < maxiters and not crashing):
             self._converged = True
-            self.final_iters = iters
-            self.final_diff = diff
+            self._final_iters = iters
+            self._final_diff = diff
 
         self.t_amplitudes = t_amplitudes_next
         self._deltaE = deltaE
@@ -96,7 +96,7 @@ class CCbase(ABC):
 
         epsinvs = {}
         if "S" in orders:
-            eps = -eps_v[:,None] +eps_o[:,None]
+            eps = -eps_v[:,None] +eps_o[None,:]
             assert eps.shape == (M, N), "Error in singles sp energies"
             epsinvs["S"] = 1/eps
         if "D" in orders:
@@ -105,7 +105,7 @@ class CCbase(ABC):
             assert eps.shape == (M, M, N, N), "Error in doubles sp energies"
             epsinvs["D"] = 1/eps
 
-        return epsinvs   
+        return epsinvs
 
     def evaluate_energy(self, correlation=False):
         if not self._has_run:
@@ -139,14 +139,16 @@ class CCbase(ABC):
         if iters == 0:
             warnings.warn("This scheme does not implement MP2 energy check after first iteration")
 
-    def _check_amplitude_symmetry(self, ts):
+    def _check_amplitude_symmetry(self, t_amplitudes):
         warnings.warn("This scheme does not implement amplitude symmetry check")
 
     def __str__(self):
+        name = "CC" + "".join(self._orders)
+
         if not self._has_run:
             return textwrap.dedent(f"""
                 -------------------------------------------
-                No CCD calculation has been run.
+                No {name} calculation has been run.
                 Currently using:
                     L = {self._basis.L_} basis functions
                     N = {self._basis.N_} occupied functions
@@ -155,11 +157,11 @@ class CCbase(ABC):
             """)
         return textwrap.dedent(f"""
             -----------------------------------------
-            Results from CCD calculation
+            Results from {name} calculation
                 dE = {self._deltaE} correlation energy
                 converged? {self._converged}
-                iters = {self.final_iters} used
-                diff = {self.final_diff} at convergence 
+                iters = {self._final_iters} used
+                diff = {self._final_diff} at convergence 
             
             Used:
                 L = {self._basis.L_} basis functions
