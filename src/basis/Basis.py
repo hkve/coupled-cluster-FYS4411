@@ -21,6 +21,7 @@ class Basis(ABC):
         self.L_ = L
         self.N_ = N
 
+        self.s_ = np.zeros((L, L), dtype=float)
         self.h_ = np.zeros((L, L), dtype=float)
         self.v_ = np.zeros((L, L, L, L), dtype=float)
         
@@ -49,6 +50,7 @@ class Basis(ABC):
 
 
     def restricted_to_unrestricted(self):
+        s_new = np.kron(self.s_, np.eye(2))
         h_new = np.kron(self.h, np.eye(2))
         
         extend = np.einsum("pr, qs -> pqrs", np.eye(2), np.eye(2))
