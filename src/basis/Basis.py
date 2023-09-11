@@ -56,6 +56,7 @@ class Basis(ABC):
         extend = np.einsum("pr, qs -> pqrs", np.eye(2), np.eye(2))
         v_new = np.kron(self.v, extend)
         
+        self.s_ = s_new
         self.h_ = h_new
         self.v_ = v_new
 
