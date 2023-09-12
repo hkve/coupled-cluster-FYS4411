@@ -21,13 +21,13 @@ class Basis(ABC):
         self.L_ = L
         self.N_ = N
 
-        self.s_ = np.zeros((L, L), dtype=float)
+        self.s_ = np.eye(L, dtype=float)
         self.h_ = np.zeros((L, L), dtype=float)
         self.v_ = np.zeros((L, L, L, L), dtype=float)
         
         self.occ_ = slice(0,N)
         self.vir_ = slice(N,L)
-
+        self.energy_shift_ = 0
 
     @property
     def h(self):
