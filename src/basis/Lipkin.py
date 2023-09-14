@@ -27,7 +27,7 @@ class Lipkin(Basis):
         pos_equal = lambda i, j: i - N == j or i == j - N
 
         v = np.zeros_like(self.v_)
-        print(v.shape)
+        
         # After some math
         for g in range(L):
             for d in range(L):
@@ -63,12 +63,30 @@ class TwoLipkins(Lipkin):
         h = self.fill_H0(Lsub, Nsub)
         v = self.fill_H1(Lsub, Nsub)
 
-    
+        o_sub1 = slice(0,Nsub)
+        v_sub1 = slice(Nsub,Lsub)
+        o_sub2 = slice(Lsub,Lsub+Nsub)
+        v_sub2 = slice(Lsub+Nsub,Lsub+Lsub)
+
+        # Need to rethink order here...
+        # occ needs to be in order, that is index as [p_sys(+/-)] 
+        # (1_1s-,1_2s-,...,N_2s-,1_1s+,1_2s+,...,2_Ns+)
+        # or
+        # (1_1s-,1_2s-,...,N_1s-,1_2s-,...,N_2s-,...)
+
+        indicies = np.arange(0, L)
+        
+        self.occ_ = np.ix_(indicies[o_sub1], indicies[o_sub1])
+        self.vir_ = np.ix_(indicies[v_sub1], indicies[v_sub2])
+        
+        print(self.occ_)
         I = np.eye(2)
         self.h_ = np.kron(I, h)
 
+        print(
+            self.h_[self.occ_[0], self.occ[0]]
+        )
+        exit()
         self.v_ = np.zeros(shape=(L,L,L,L))
         # Fill this to be like
         self.v_ = np.kron(v, I)
-
-        print(self.v_.shape)
