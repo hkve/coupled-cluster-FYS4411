@@ -7,10 +7,12 @@ class HF(HFbase):
         assert not basis.spinrestricted_, "HF requires a general spin basis"
         super().__init__(basis)
 
+
     def evaluate_energy_scheme(self):
-        E_OB = np.sum(np.diag(self.rho_)*np.diag(self.basis.h))
+        E_OB = np.trace(self.rho_ @ self.basis.h)
         E_TB = 0.5*np.einsum("ag,bd,abgd", self.rho_, self.rho_, self.basis.v)
-        return E_OB+E_TB        
+        return E_OB+E_TB
+
 
     def evaluate_HFmat_scheme(self, rho, h, v):
         return h + np.einsum("gd,agbd->ab", rho, v)
@@ -20,12 +22,14 @@ class RHF(HFbase):
         assert basis.spinrestricted_, "HF requires a spin restricted basis"
         super().__init__(basis)
 
+
     def evaluate_energy_scheme(self):
-        E_OB = np.sum(np.diag(self.rho_)*np.diag(self.basis.h))
+        E_OB = np.trace(self.rho_ @ self.basis.h)
         E_TB = 0.5*np.einsum("ag,bd,abgd", self.rho_, self.rho_, self.basis.v) \
             - 0.25*np.einsum("ag,bd,abdg", self.rho_, self.rho_, self.basis.v) 
    
         return E_OB+E_TB
+
 
     def evaluate_HFmat_scheme(self, rho, h, v):
         return h + np.einsum("gd,agbd->ab", rho, v) - 0.5*np.einsum("gd,agdb->ab", rho, v)
