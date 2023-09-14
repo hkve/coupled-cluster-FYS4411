@@ -125,8 +125,9 @@ class Basis(ABC):
         if self.spinrestricted_:
             return 2*self.h[occ,occ].trace() + \
                    2*np.einsum("ijij", self.v[occ,occ,occ,occ]) \
-                   - np.einsum("ijji", self.v[occ,occ,occ,occ])
+                   - np.einsum("ijji", self.v[occ,occ,occ,occ]) \
+                + self.energy_shift_
         else:
             return self.h[occ,occ].trace()\
                    + 0.5*np.einsum("ijij", self.v[occ,occ,occ,occ]) \
-                    
+                + self.energy_shift_
