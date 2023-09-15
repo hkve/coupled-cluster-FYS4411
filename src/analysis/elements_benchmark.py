@@ -35,6 +35,8 @@ def main():
     run_single(atom="Ne 0 0 0", basisset="cc-pVDZ")
 
     # Di-Atoms:
-    run_single(atom="H 0 0 0; H 0 0 1.2", basisset="sto-3g")
+    run_single(atom="H 0 0 -0.3714; H 0 0 0.3714", basisset="cc-pVDZ")
+    run_single(atom="H 0 0 0; H 0 0 1.1", basisset="sto-3g")
+    # run_single(atom="N 0 0 0; N 0 0 1.1", basisset="sto-3g")
 if __name__ == "__main__":
     main()
