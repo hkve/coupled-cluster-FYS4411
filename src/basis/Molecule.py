@@ -16,7 +16,5 @@ class Molecule(Basis):
         self.h_ = mol.intor_symmetric("int1e_kin") + mol.intor_symmetric("int1e_nuc")
         self.v_ = mol.intor("int2e").reshape(L, L, L, L).transpose(0, 2, 1, 3)
 
-
         if not spinrestricted:
             self.restricted_to_unrestricted()
-            self.make_AS()
